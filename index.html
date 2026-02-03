@@ -23,128 +23,123 @@
         </div>
     </header>
 
-    <!-- Search -->
-    <div class="search-wrapper">
-        <div class="search-container">
-            <span class="search-icon">🔍</span>
-            <input type="text" class="search-input" placeholder="Найти товар..." id="searchInput">
+    <!-- Products View -->
+    <div class="products-view" id="productsView">
+        <!-- Search -->
+        <div class="search-wrapper">
+            <div class="search-container">
+                <span class="search-icon">🔍</span>
+                <input type="text" class="search-input" placeholder="Найти товар..." id="searchInput">
+            </div>
+        </div>
+        <!-- Hero Section (Dual) -->
+        <div class="hero-grid" style="padding: 0 16px;">
+            <!-- Banner 1 -->
+            <div class="hero-card primary">
+                <div class="hero-content">
+                    <h1 class="hero-title">New<br>Drops</h1>
+                    <p class="hero-subtitle">Future styles.</p>
+                    <button class="hero-btn" data-action="scroll-products">Check</button>
+                </div>
+                <div class="hero-bg-anim"></div>
+                <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=600&fit=crop" alt="Hero"
+                    class="hero-img">
+            </div>
+
+            <!-- Banner 2 -->
+            <div class="hero-card secondary">
+                <div class="hero-content">
+                    <h1 class="hero-title">Hot<br>Sale</h1>
+                    <p class="hero-subtitle">-50% OFF</p>
+                    <button class="hero-btn" data-action="filter-sale">Go!</button>
+                </div>
+                <div class="hero-bg-anim"></div>
+                <img src="https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?w=600&fit=crop" alt="Sale"
+                    class="hero-img">
+            </div>
+        </div>
+        <!-- Categories -->
+        <div class="section-title">📂 Категории</div>
+        <div class="categories" id="categories">
+            <div class="category-item active" data-category="all">
+                <div class="category-icon">🔥</div>
+                <span class="category-label">Все</span>
+            </div>
+            <div class="category-item" data-category="favorites">
+                <div class="category-icon">❤️</div>
+                <span class="category-label">Избранное</span>
+            </div>
+            <div class="category-item" data-category="china">
+                <div class="category-icon">🇨🇳</div>
+                <span class="category-label">Китай</span>
+            </div>
+            <div class="category-item" data-category="clothes">
+                <div class="category-icon">👕</div>
+                <span class="category-label">Одежда</span>
+            </div>
+            <div class="category-item" data-category="electronics">
+                <div class="category-icon">📱</div>
+                <span class="category-label">Электро</span>
+            </div>
+            <div class="category-item" data-category="accessories">
+                <div class="category-icon">💎</div>
+                <span class="category-label">Аксесс...</span>
+            </div>
+        </div>
+
+        <!-- Products -->
+        <div class="section-title">✨ Товары</div>
+        <div class="product-grid" id="productGrid"></div>
+    </div>
+
+    <!-- Cart View -->
+    <div class="cart-view" id="cartView">
+        <div class="section-title">🛒 Корзина</div>
+        <div id="cartItems"></div>
+        <div class="cart-total" id="cartTotal" style="display: none;">
+            <div class="cart-total-row">
+                <span class="cart-total-label">Товаров:</span>
+                <span class="cart-total-value" id="cartCount">0</span>
+            </div>
+            <div class="cart-total-row">
+                <span class="cart-total-label">Итого:</span>
+                <span class="cart-total-value big" id="cartSum">0 ₴</span>
+            </div>
+            <button class="checkout-btn">🚀 Оформить заказ</button>
         </div>
     </div>
 
-    <!-- Main Content -->
-    <main class="main-content">
-
-
-        <!-- Products View -->
-        <div class="products-view" id="productsView">
-            <!-- Hero Section (Dual) -->
-            <div class="hero-grid">
-                <!-- Banner 1 -->
-                <div class="hero-card primary">
-                    <div class="hero-content">
-                        <h1 class="hero-title">New<br>Drops</h1>
-                        <p class="hero-subtitle">Future styles.</p>
-                        <button class="hero-btn" data-action="scroll-products">Check</button>
-                    </div>
-                    <div class="hero-bg-anim"></div>
-                    <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=600&fit=crop" alt="Hero"
-                        class="hero-img">
-                </div>
-
-                <!-- Banner 2 -->
-                <div class="hero-card secondary">
-                    <div class="hero-content">
-                        <h1 class="hero-title">Hot<br>Sale</h1>
-                        <p class="hero-subtitle">-50% OFF</p>
-                        <button class="hero-btn" data-action="filter-sale">Go!</button>
-                    </div>
-                    <div class="hero-bg-anim"></div>
-                    <img src="https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?w=600&fit=crop" alt="Sale"
-                        class="hero-img">
-                </div>
-            </div>
-            <!-- Categories -->
-            <div class="section-title">📂 Категории</div>
-            <div class="categories" id="categories">
-                <div class="category-item active" data-category="all">
-                    <div class="category-icon">🔥</div>
-                    <span class="category-label">Все</span>
-                </div>
-                <div class="category-item" data-category="favorites">
-                    <div class="category-icon">❤️</div>
-                    <span class="category-label">Избранное</span>
-                </div>
-                <div class="category-item" data-category="china">
-                    <div class="category-icon">🇨🇳</div>
-                    <span class="category-label">Китай</span>
-                </div>
-                <div class="category-item" data-category="clothes">
-                    <div class="category-icon">👕</div>
-                    <span class="category-label">Одежда</span>
-                </div>
-                <div class="category-item" data-category="electronics">
-                    <div class="category-icon">📱</div>
-                    <span class="category-label">Электро</span>
-                </div>
-                <div class="category-item" data-category="accessories">
-                    <div class="category-icon">💎</div>
-                    <span class="category-label">Аксесс...</span>
-                </div>
-            </div>
-
-            <!-- Products -->
-            <div class="section-title">✨ Товары</div>
-            <div class="product-grid" id="productGrid"></div>
-        </div>
-
-        <!-- Cart View -->
-        <div class="cart-view" id="cartView">
-            <div class="section-title">🛒 Корзина</div>
-            <div id="cartItems"></div>
-            <div class="cart-total" id="cartTotal" style="display: none;">
-                <div class="cart-total-row">
-                    <span class="cart-total-label">Товаров:</span>
-                    <span class="cart-total-value" id="cartCount">0</span>
-                </div>
-                <div class="cart-total-row">
-                    <span class="cart-total-label">Итого:</span>
-                    <span class="cart-total-value big" id="cartSum">0 ₴</span>
-                </div>
-                <button class="checkout-btn">🚀 Оформить заказ</button>
+    <!-- Profile View -->
+    <div class="profile-view" id="profileView" style="display: none;">
+        <div class="profile-header">
+            <div class="profile-avatar" id="profileAvatar">👤</div>
+            <div class="profile-info">
+                <div class="profile-name" id="profileName">Loading...</div>
+                <div class="profile-username" id="profileUsername">@username</div>
             </div>
         </div>
 
-        <!-- Profile View -->
-        <div class="profile-view" id="profileView" style="display: none;">
-            <div class="profile-header">
-                <div class="profile-avatar" id="profileAvatar">👤</div>
-                <div class="profile-info">
-                    <div class="profile-name" id="profileName">Loading...</div>
-                    <div class="profile-username" id="profileUsername">@username</div>
-                </div>
+        <div class="section-title">⚙️ Настройки</div>
+        <div class="profile-menu">
+            <div class="profile-menu-item">
+                <span class="menu-icon">🌍</span>
+                <span class="menu-label">Язык</span>
+                <span class="menu-value">Русский</span>
             </div>
-
-            <div class="section-title">⚙️ Настройки</div>
-            <div class="profile-menu">
-                <div class="profile-menu-item">
-                    <span class="menu-icon">🌍</span>
-                    <span class="menu-label">Язык</span>
-                    <span class="menu-value">Русский</span>
-                </div>
-                <div class="profile-menu-item">
-                    <span class="menu-icon">🌙</span>
-                    <span class="menu-label">Тема</span>
-                    <span class="menu-value">Тёмная</span>
-                </div>
-            </div>
-
-            <div class="section-title">📦 История заказов</div>
-            <div class="profile-menu">
-                <div class="profile-empty-orders">
-                    История заказов пуста
-                </div>
+            <div class="profile-menu-item">
+                <span class="menu-icon">🌙</span>
+                <span class="menu-label">Тема</span>
+                <span class="menu-value">Тёмная</span>
             </div>
         </div>
+
+        <div class="section-title">📦 История заказов</div>
+        <div class="profile-menu">
+            <div class="profile-empty-orders">
+                История заказов пуста
+            </div>
+        </div>
+    </div>
     </main>
 
     <!-- Bottom Navigation -->

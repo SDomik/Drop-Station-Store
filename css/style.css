@@ -15,6 +15,11 @@
     --gap: 12px;
     --radius: 16px;
     --radius-sm: 10px;
+
+    /* Standardized Spacing (Reduced) */
+    --padding-x: 16px;
+    --section-gap: 16px;
+    --element-gap: 8px;
 }
 
 * {
@@ -36,7 +41,7 @@ body {
 /* === HEADER === */
 .header {
     background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
-    padding: 24px 20px 65px;
+    padding: var(--section-gap) var(--padding-x);
     position: relative;
     overflow: hidden;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
@@ -118,8 +123,8 @@ body {
 
 /* === SEARCH BAR === */
 .search-wrapper {
-    padding: 0 16px;
-    margin-top: -30px;
+    padding: 0 var(--padding-x);
+    margin: var(--element-gap) 0 var(--section-gap) 0;
     position: relative;
     z-index: 10;
 }
@@ -159,8 +164,8 @@ body {
 .hero-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin-bottom: 24px;
+    gap: var(--element-gap);
+    margin: 0 var(--padding-x) var(--section-gap);
 }
 
 /* Warm Animation (Refined) */
@@ -328,6 +333,8 @@ body {
     font-size: 18px;
     font-weight: 600;
     margin-bottom: 12px;
+    padding: 0 16px;
+    /* Added padding to titles as well */
     display: flex;
     align-items: center;
     gap: 8px;
@@ -349,11 +356,10 @@ body {
 /* === CATEGORIES (Redesigned) === */
 .categories {
     display: flex;
-    gap: 16px;
+    gap: var(--padding-x);
     overflow-x: auto;
-    padding: 20px 4px 20px 4px;
-    /* Increased top/bottom padding to avoid clipping */
-    margin-bottom: 10px;
+    padding: var(--element-gap) var(--padding-x);
+    margin-bottom: var(--element-gap);
     scrollbar-width: none;
 }
 
@@ -365,6 +371,8 @@ body {
     min-width: 60px;
     cursor: pointer;
     transition: all 0.3s ease;
+    padding: 4px;
+    /* Added padding to expand hit area */
 }
 
 .category-icon {
@@ -410,7 +418,8 @@ body {
 .product-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
+    gap: var(--gap);
+    padding: 0 var(--padding-x);
 }
 
 .card {
@@ -749,7 +758,7 @@ body {
 /* === CART VIEW === */
 .cart-view {
     display: none;
-    padding: 20px 16px;
+    padding: var(--section-gap) var(--padding-x);
 }
 
 .cart-view.active {
@@ -938,7 +947,7 @@ body {
 
 /* === PROFILE VIEW === */
 .profile-view {
-    padding: 10px;
+    padding: var(--section-gap) var(--padding-x);
     animation: fadeScale 0.3s ease;
 }
 
