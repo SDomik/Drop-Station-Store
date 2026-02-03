@@ -33,30 +33,63 @@
 
     <!-- Main Content -->
     <main class="main-content">
-        <!-- Hero Section -->
-        <div class="hero-section">
-            <div class="hero-content">
-                <h1 class="hero-title">New Collection</h1>
-                <p class="hero-subtitle">Discover the styles of tomorrow.</p>
-                <button class="hero-btn">Shop Now</button>
-            </div>
-            <div class="hero-image-container">
-                <div class="hero-circle"></div>
-                <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=600&fit=crop" alt="Hero"
-                    class="hero-img">
-            </div>
-        </div>
+
 
         <!-- Products View -->
         <div class="products-view" id="productsView">
+            <!-- Hero Section (Dual) -->
+            <div class="hero-grid">
+                <!-- Banner 1 -->
+                <div class="hero-card primary">
+                    <div class="hero-content">
+                        <h1 class="hero-title">New<br>Drops</h1>
+                        <p class="hero-subtitle">Future styles.</p>
+                        <button class="hero-btn" data-action="scroll-products">Check</button>
+                    </div>
+                    <div class="hero-bg-anim"></div>
+                    <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=600&fit=crop" alt="Hero"
+                        class="hero-img">
+                </div>
+
+                <!-- Banner 2 -->
+                <div class="hero-card secondary">
+                    <div class="hero-content">
+                        <h1 class="hero-title">Hot<br>Sale</h1>
+                        <p class="hero-subtitle">-50% OFF</p>
+                        <button class="hero-btn" data-action="filter-sale">Go!</button>
+                    </div>
+                    <div class="hero-bg-anim"></div>
+                    <img src="https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?w=600&fit=crop" alt="Sale"
+                        class="hero-img">
+                </div>
+            </div>
             <!-- Categories -->
             <div class="section-title">📂 Категории</div>
             <div class="categories" id="categories">
-                <div class="chip active" data-category="all">🔥 Все</div>
-                <div class="chip" data-category="china">🇨🇳 Китай</div>
-                <div class="chip" data-category="clothes">👕 Одежда</div>
-                <div class="chip" data-category="electronics">📱 Электроника</div>
-                <div class="chip" data-category="accessories">💎 Аксессуары</div>
+                <div class="category-item active" data-category="all">
+                    <div class="category-icon">🔥</div>
+                    <span class="category-label">Все</span>
+                </div>
+                <div class="category-item" data-category="favorites">
+                    <div class="category-icon">❤️</div>
+                    <span class="category-label">Избранное</span>
+                </div>
+                <div class="category-item" data-category="china">
+                    <div class="category-icon">🇨🇳</div>
+                    <span class="category-label">Китай</span>
+                </div>
+                <div class="category-item" data-category="clothes">
+                    <div class="category-icon">👕</div>
+                    <span class="category-label">Одежда</span>
+                </div>
+                <div class="category-item" data-category="electronics">
+                    <div class="category-icon">📱</div>
+                    <span class="category-label">Электро</span>
+                </div>
+                <div class="category-item" data-category="accessories">
+                    <div class="category-icon">💎</div>
+                    <span class="category-label">Аксесс...</span>
+                </div>
             </div>
 
             <!-- Products -->

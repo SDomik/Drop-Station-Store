@@ -88,11 +88,11 @@ App.ui.updateCartBadge = function (count) {
 };
 
 App.ui.updateCategories = function (activeCategory) {
-    document.querySelectorAll('.chip').forEach(chip => {
-        if (chip.dataset.category === activeCategory) {
-            chip.classList.add('active');
+    document.querySelectorAll('.category-item').forEach(item => {
+        if (item.dataset.category === activeCategory) {
+            item.classList.add('active');
         } else {
-            chip.classList.remove('active');
+            item.classList.remove('active');
         }
     });
 };

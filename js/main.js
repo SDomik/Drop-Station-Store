@@ -13,7 +13,11 @@ function filterProducts() {
     let filtered = App.products;
 
     if (category !== 'all') {
-        filtered = filtered.filter(p => p.category === category);
+        if (category === 'favorites') {
+            filtered = filtered.filter(p => App.store.isInWishlist(p.id));
+        } else {
+            filtered = filtered.filter(p => p.category === category);
+        }
     }
 
     if (searchQuery) {
@@ -69,9 +73,9 @@ function handleCartClick(e) {
 }
 
 function handleCategoryClick(e) {
-    const chip = e.target.closest('.chip');
-    if (!chip) return;
-    App.store.setCategory(chip.dataset.category);
+    const item = e.target.closest('.category-item');
+    if (!item) return;
+    App.store.setCategory(item.dataset.category);
 }
 
 function handleSearch(e) {
@@ -248,3 +252,23 @@ App.ui.renderProducts(
     (id) => App.store.isInWishlist(id)
 );
 App.ui.updateCartBadge(0);
+
+// Hero Buttons (Delegation)
+document.addEventListener('click', (e) => {
+    const heroBtn = e.target.closest('.hero-btn');
+    if (heroBtn) {
+        const action = heroBtn.dataset.action;
+        const productsSection = document.getElementById('productsView');
+
+        if (productsSection) {
+            productsSection.scrollIntoView({ behavior: 'smooth' });
+
+            if (action === 'filter-sale') {
+                App.store.setCategory('all');
+                App.utils.showToast('🔥 Распродажа (Демо)!');
+            } else {
+                App.store.setCategory('all');
+            }
+        }
+    }
+});
