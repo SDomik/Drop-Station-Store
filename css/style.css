@@ -21,7 +21,7 @@
     /* For micro-elements */
     --padding-sm: 8px;
     /* Inside cards, small gaps */
-    --padding-md: 12px;
+    --padding-md: 8px;
     /* Standard container gap */
     --padding-x: 16px;
     /* Global side padding */
@@ -109,6 +109,11 @@ body {
     gap: 12px;
     cursor: pointer;
     flex-shrink: 0;
+    transition: all 0.3s ease;
+}
+
+@media (max-width: 768px) {
+    /* Logo stays visible now as requested */
 }
 
 .logo-icon-vibrant {
@@ -158,27 +163,39 @@ body {
     flex: 1;
     display: flex;
     align-items: center;
-    gap: var(--padding-md);
+    justify-content: flex-end;
+    gap: var(--padding-sm);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    min-width: 0;
 }
+
+@media (max-width: 768px) {
+    /* Catalog and Search wrapper behavior updated */
+}
+
+/* Search mode behaviors restricted to mobile only in media queries above */
 
 .catalog-btn-standalone {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 0 16px;
+    justify-content: center;
+    width: 44px;
     height: 44px;
     background: rgba(0, 0, 0, 0.3);
-    /* Match search bar */
     backdrop-filter: blur(15px);
     color: white;
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 12px;
-    font-size: 14px;
-    font-weight: 700;
     cursor: pointer;
-    white-space: nowrap;
     transition: all 0.2s;
+    flex-shrink: 0;
 }
+
+.catalog-btn-standalone span {
+    display: none;
+}
+
+/* Consolidated to DESKTOP CONFIGURATION below */
 
 .catalog-icon {
     flex-shrink: 0;
@@ -190,8 +207,14 @@ body {
 }
 
 .header-search-wrapper {
-    flex: 1;
+    flex: 0 0 44px;
+    width: 44px;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    z-index: 10;
 }
+
+/* Desktop search expand behavior handled via flex */
 
 .search-container-glass {
     height: 44px;
@@ -201,13 +224,16 @@ body {
     border-radius: 12px;
     display: flex;
     align-items: center;
-    padding: 0 10px;
-    gap: 8px;
-    transition: all 0.3s;
+    padding: 0 12px;
+    gap: 10px;
+    cursor: pointer;
+    position: relative;
+    z-index: 1001;
+    /* Above mobile search bar */
 }
 
-.search-container-glass:focus-within {
-    background: rgba(255, 255, 255, 0.08);
+.header-search-wrapper.expanded .search-container-glass {
+    background: rgba(0, 0, 0, 0.4);
     border-color: var(--tg-theme-button-color);
 }
 
@@ -223,10 +249,43 @@ body {
     color: white;
     font-size: 15px;
     outline: none;
+    display: none;
+}
+
+.header-search-wrapper.expanded .search-input {
+    display: block;
 }
 
 .search-input::placeholder {
     color: rgba(255, 255, 255, 0.3);
+}
+
+/* === DESKTOP CONFIGURATION (Screens wider than 768px) === */
+@media (min-width: 645px) {
+    .catalog-btn-standalone {
+        width: auto;
+        padding: 0 16px;
+        gap: 10px;
+    }
+
+    .catalog-btn-standalone span {
+        display: block;
+    }
+
+    .header-search-wrapper {
+        flex: 0 0 200px;
+        width: 200px;
+        transition: all 0.3s ease;
+    }
+
+    .header-search-wrapper.expanded {
+        flex: 0 0 350px;
+        width: 350px;
+    }
+
+    .search-input {
+        display: block;
+    }
 }
 
 .clear-search-btn {
@@ -251,12 +310,15 @@ body {
     display: flex;
     gap: 10px;
     flex-shrink: 0;
+    position: relative;
+    z-index: 1002;
+    /* Ensure actions are always on top of search wrapper */
 }
 
 .header-action-btn {
     width: 44px;
     height: 44px;
-    background: rgba(255, 255, 255, 0.07);
+    background: rgba(0, 0, 0, 0.3);
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 12px;
@@ -286,6 +348,121 @@ body {
     border-radius: 50%;
     box-shadow: 0 0 10px rgba(239, 68, 68, 0.6);
 }
+
+/* === SEARCH MODAL (Mobile) === */
+.search-modal-input-wrapper {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.search-modal-input {
+    width: 100%;
+    padding: 14px 40px 14px 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    color: white;
+    font-size: 16px;
+    outline: none;
+    transition: all 0.3s;
+}
+
+.search-modal-input:focus {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--tg-theme-button-color);
+}
+
+.search-modal-input::placeholder {
+    color: rgba(255, 255, 255, 0.3);
+}
+
+.search-modal-clear {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 18px;
+    opacity: 0.5;
+    cursor: pointer;
+    padding: 4px;
+}
+
+.search-modal-clear:hover {
+    opacity: 1;
+}
+
+.search-results {
+    max-height: 60vh;
+    overflow-y: auto;
+    padding-top: 10px;
+}
+
+.search-empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--tg-theme-hint-color);
+}
+
+.search-empty-icon {
+    font-size: 48px;
+    margin-bottom: 12px;
+    opacity: 0.5;
+}
+
+.search-empty p {
+    font-size: 14px;
+    opacity: 0.7;
+}
+
+/* Hide search modal on desktop */
+/* Hide mobile search bar by default */
+.mobile-search-bar {
+    display: none;
+}
+
+@media (max-width: 645px) {
+    .mobile-search-bar {
+        display: block;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        background: #16161f;
+        /* Solid background, no blur */
+        padding: 116px 14px 14px;
+        /* Balanced space: more on top to clear header, less on bottom */
+        z-index: 999;
+        transform: translateY(-100%);
+        transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        border-radius: 0 0 24px 24px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .mobile-search-bar.active {
+        transform: translateY(0);
+    }
+
+    .mobile-search-bar .modal-title,
+    .mobile-search-bar .search-results {
+        display: none !important;
+    }
+
+    .mobile-search-bar .search-modal-input-wrapper {
+        margin-bottom: 0;
+    }
+
+    /* Hide search modal on mobile since we use drop-down now */
+    #searchOverlay {
+        display: none !important;
+    }
+}
+
+/* Hide desktop search parts when mobile-search-bar is active if needed, 
+   but usually header stays on top */
+
 
 /* Quick Categories Menu */
 .header-categories {
@@ -565,12 +742,29 @@ body {
     font-weight: 600;
 }
 
-/* === PRODUCT GRID (4 columns) === */
+/* === PRODUCT GRID (Min 3, Max 5 columns) === */
 .product-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: var(--padding-sm);
-    padding: 0 var(--padding-x);
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    padding: 0 10px;
+    /* Matched to gap */
+    width: 100%;
+}
+
+@media (min-width: 600px) {
+    .product-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+        padding: 0 12px;
+        /* Matched to gap */
+    }
+}
+
+@media (min-width: 900px) {
+    .product-grid {
+        grid-template-columns: repeat(5, 1fr);
+    }
 }
 
 .card {
@@ -735,7 +929,8 @@ body {
     border-radius: 20px;
     display: flex;
     justify-content: space-between;
-    padding: 8px 12px;
+    padding: 6px 12px;
+    /* Reduced vertical padding */
     z-index: 1000;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
 }
@@ -750,7 +945,8 @@ body {
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
-    padding: 10px 0;
+    padding: 6px 0;
+    /* Reduced padding for items */
     border-radius: 12px;
     color: var(--tg-theme-hint-color);
 }
@@ -765,12 +961,14 @@ body {
 }
 
 .nav-icon {
-    font-size: 22px;
+    font-size: 20px;
+    /* Slightly smaller icon */
     transition: transform 0.3s ease;
 }
 
 .nav-label {
-    font-size: 10px;
+    font-size: 9px;
+    /* Slightly smaller text */
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -828,7 +1026,7 @@ body {
     right: 0;
     bottom: 0;
     background: rgba(0, 0, 0, 0.8);
-    backdrop-filter: blur(10px);
+    /* backdrop-filter: blur(10px); REMOVED BLUR */
     z-index: 200;
     opacity: 0;
     visibility: hidden;
@@ -936,7 +1134,11 @@ body {
 /* === CART VIEW === */
 .cart-view {
     display: block;
-    padding: var(--padding-md) var(--padding-x) var(--section-gap);
+    padding: 0 var(--padding-x) var(--section-gap);
+}
+
+.cart-view .section-title:first-child {
+    margin-top: var(--padding-md);
 }
 
 .cart-view.hidden {
@@ -1194,8 +1396,12 @@ body {
 
 /* === PROFILE VIEW === */
 .profile-view {
-    padding: var(--padding-md) var(--padding-x) var(--section-gap);
+    padding: 0 var(--padding-x) var(--section-gap);
     animation: fadeScale 0.3s ease;
+}
+
+.profile-view>*:first-child {
+    margin-top: var(--padding-md);
 }
 
 @keyframes fadeScale {
@@ -1290,4 +1496,107 @@ body {
     text-align: center;
     color: var(--tg-theme-hint-color);
     font-size: 14px;
+}
+
+/* === MOBILE ADAPTIVITY === */
+@media (max-width: 480px) {
+    body {
+        padding-top: 115px;
+        /* Restored back to match desktop feel or slightly adjusted */
+    }
+
+    .main-content {
+        padding-top: 0;
+    }
+
+    .header {
+        padding: 8px 12px;
+        gap: 8px;
+    }
+
+    .logo {
+        gap: 8px;
+    }
+
+    .logo-icon-vibrant {
+        width: 34px;
+        height: 34px;
+        font-size: 16px;
+    }
+
+    .logo-name {
+        font-size: 15px;
+    }
+
+    .logo-tagline {
+        font-size: 9px;
+    }
+
+    .catalog-btn-standalone {
+        height: 40px;
+        padding: 0 12px;
+        font-size: 13px;
+        gap: 6px;
+    }
+
+    .search-container-glass {
+        height: 40px;
+        padding: 0 10px;
+        gap: 6px;
+    }
+
+    .search-icon {
+        font-size: 14px;
+    }
+
+    .search-input {
+        font-size: 14px;
+    }
+
+    /* Quick Categories Scrollable */
+    .quick-categories {
+        padding: 5px 12px;
+        gap: 8px;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .quick-cat {
+        padding: 6px 12px;
+        font-size: 12px;
+        white-space: nowrap;
+    }
+
+    /* Product Grid - Padding matched to gap */
+    .product-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+        padding: 0 8px;
+        /* Matched to gap */
+    }
+
+    .card-title {
+        font-size: 14px;
+    }
+
+    .card-price {
+        font-size: 15px;
+    }
+}
+
+@media (max-width: 360px) {
+    .logo-tagline {
+        display: none;
+        /* Hide tagline on very small screens */
+    }
+
+    .catalog-btn-standalone span {
+        display: none;
+        /* Hide text, keep icon only */
+    }
+
+    .catalog-btn-standalone {
+        width: 40px;
+        justify-content: center;
+    }
 }

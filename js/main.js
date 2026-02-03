@@ -96,7 +96,54 @@ function handleSearch(e) {
     }
 }
 
-function clearSearch() {
+function expandSearch() {
+    // Check if mobile (screen width < 645px)
+    if (window.innerWidth < 645) {
+        const mobileSearchBar = document.getElementById('mobileSearchBar');
+        if (mobileSearchBar && mobileSearchBar.classList.contains('active')) {
+            closeSearchModal();
+        } else {
+            // Close catalog if it's open
+            const catalogOverlay = document.getElementById('catalogOverlay');
+            if (catalogOverlay) catalogOverlay.classList.remove('active');
+
+            openSearchModal();
+        }
+        return;
+    }
+
+    // Desktop behavior - expand in header
+    const wrapper = document.getElementById('headerSearch');
+    const input = document.getElementById('searchInput');
+
+    if (wrapper) {
+        const isExpanded = wrapper.classList.contains('expanded');
+        if (isExpanded) {
+            if (!input || !input.value) {
+                collapseSearch();
+            }
+        } else {
+            wrapper.classList.add('expanded');
+            if (input) {
+                input.focus();
+            }
+        }
+    }
+}
+
+function collapseSearch() {
+    const wrapper = document.getElementById('headerSearch');
+    const input = document.getElementById('searchInput');
+    const headerRow = document.querySelector('.header-main-row');
+
+    if (wrapper && (!input || !input.value)) {
+        wrapper.classList.remove('expanded');
+        if (headerRow) headerRow.classList.remove('search-mode');
+    }
+}
+
+function clearSearch(e) {
+    if (e) e.stopPropagation();
     const input = document.getElementById('searchInput');
     if (input) {
         input.value = '';
@@ -105,6 +152,135 @@ function clearSearch() {
         App.store.setSearchQuery('');
         input.focus();
     }
+}
+
+// --- Mobile Drop-down Search Logic ---
+function openSearchModal() {
+    const mobileSearchBar = document.getElementById('mobileSearchBar');
+    const searchModalInput = document.getElementById('searchModalInput');
+
+    if (mobileSearchBar) {
+        mobileSearchBar.classList.add('active');
+        // document.body.style.overflow = 'hidden'; // Keep scrolling for drop-down or disable? Let's keep it for now.
+
+        // Focus input after animation
+        setTimeout(() => {
+            if (searchModalInput) searchModalInput.focus();
+        }, 400);
+
+        App.utils.triggerHaptic('light');
+    }
+}
+
+function closeSearchModal() {
+    const mobileSearchBar = document.getElementById('mobileSearchBar');
+    const searchModalInput = document.getElementById('searchModalInput');
+
+    if (mobileSearchBar) {
+        mobileSearchBar.classList.remove('active');
+        // document.body.style.overflow = '';
+
+        // Clear search if empty
+        if (searchModalInput && !searchModalInput.value) {
+            App.store.setSearchQuery('');
+        }
+    }
+}
+
+function handleSearchModalInput(e) {
+    const query = e.target.value;
+    App.store.setSearchQuery(query);
+
+    // Update clear button visibility
+    const clearBtn = document.getElementById('searchModalClear');
+    if (clearBtn) {
+        clearBtn.style.display = query.length > 0 ? 'flex' : 'none';
+    }
+
+    // If typing and not on products view, switch back to products (matching desktop behavior)
+    const productsView = document.getElementById('productsView');
+    if (productsView && productsView.classList.contains('hidden') && query.length > 0) {
+        switchView('products');
+    }
+}
+
+function clearSearchModal() {
+    const input = document.getElementById('searchModalInput');
+    if (input) {
+        input.value = '';
+        const clearBtn = document.getElementById('searchModalClear');
+        if (clearBtn) clearBtn.style.display = 'none';
+        App.store.setSearchQuery('');
+    }
+}
+
+function renderSearchResults(query) {
+    const resultsContainer = document.getElementById('searchResults');
+    if (!resultsContainer) return;
+
+    if (!query || query.trim() === '') {
+        resultsContainer.innerHTML = `
+            <div class="search-empty">
+                <div class="search-empty-icon">🔍</div>
+                <p>Начните вводить название товара</p>
+            </div>
+        `;
+        return;
+    }
+
+    // Filter products
+    const filtered = App.products.filter(p => {
+        const name = getT(`p${p.id}_name`).toLowerCase();
+        const desc = getT(`p${p.id}_desc`).toLowerCase();
+        return name.includes(query.toLowerCase()) || desc.includes(query.toLowerCase());
+    });
+
+    if (filtered.length === 0) {
+        resultsContainer.innerHTML = `
+            <div class="search-empty">
+                <div class="search-empty-icon">😔</div>
+                <p>Ничего не найдено</p>
+            </div>
+        `;
+        return;
+    }
+
+    // Render product cards
+    const isInCart = (id) => App.store.state.cart.some(item => item.id === id);
+    const isInWishlist = (id) => App.store.state.wishlist.includes(id);
+
+    resultsContainer.innerHTML = `
+        <div class="product-grid" style="padding: 0;">
+            ${filtered.map(p => {
+        const inCart = isInCart(p.id);
+        const inWishlist = isInWishlist(p.id);
+        const btnClass = inCart ? 'card-btn added' : 'card-btn';
+        const btnText = inCart ? '✓' : '+';
+        const heartClass = inWishlist ? 'card-heart active' : 'card-heart';
+        const heartText = inWishlist ? '❤️' : '🤍';
+
+        return `
+                    <div class="card" data-action="open-product" data-id="${p.id}">
+                        <button class="${heartClass}" data-action="toggle-wishlist" data-id="${p.id}">${heartText}</button>
+                        <div class="card-img-wrapper">
+                            <img src="${p.img}" class="card-img" alt="${p.name}" loading="lazy">
+                            ${p.badge ? `<span class="card-badge ${p.badge}">${getT('badge_second')}</span>` : `<span class="card-badge">${getT('badge_new')}</span>`}
+                        </div>
+                        <div class="card-content">
+                            <div class="card-title">${getT(`p${p.id}_name`)}</div>
+                            <div class="card-desc">${getT(`p${p.id}_desc`)}</div>
+                            <div class="card-footer">
+                                <span class="card-price">${p.price} ₴</span>
+                                <button class="${btnClass}" data-action="add-to-cart" data-id="${p.id}">
+                                    ${btnText}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+    }).join('')}
+        </div>
+    `;
 }
 
 // --- Modal Logic ---
@@ -193,13 +369,20 @@ function switchView(viewName) {
 
     if (viewName === 'products') {
         productsView.classList.remove('hidden');
+        closeSearchModal(); // Optional: close if needed when clicking Home, or keep open? 
+        // User said "if open... he should hide". So let's close both.
+        if (catalogOverlay) catalogOverlay.classList.remove('active');
     } else if (viewName === 'cart') {
         cartView.classList.remove('hidden');
-        App.ui.renderCart(App.store.state.cart); // Re-render cart when switching to it
+        App.ui.renderCart(App.store.state.cart);
+        closeSearchModal();
+        if (catalogOverlay) catalogOverlay.classList.remove('active');
     } else if (viewName === 'profile') {
         if (profileView) {
             profileView.classList.remove('hidden');
             renderProfile();
+            closeSearchModal();
+            if (catalogOverlay) catalogOverlay.classList.remove('active');
         }
     }
 
@@ -270,7 +453,19 @@ const cartItems = document.getElementById('cartItems');
 if (cartItems) cartItems.addEventListener('click', handleCartClick);
 
 const searchInput = document.getElementById('searchInput');
-if (searchInput) searchInput.addEventListener('input', handleSearch);
+if (searchInput) {
+    searchInput.addEventListener('input', handleSearch);
+    searchInput.addEventListener('blur', collapseSearch);
+}
+
+const headerSearch = document.getElementById('headerSearch');
+if (headerSearch) {
+    headerSearch.addEventListener('click', (e) => {
+        if (e.target.closest('.search-container-glass')) {
+            expandSearch();
+        }
+    });
+}
 
 const clearSearchBtn = document.getElementById('clearSearch');
 if (clearSearchBtn) clearSearchBtn.addEventListener('click', clearSearch);
@@ -283,6 +478,15 @@ document.getElementById('catalogBtn').addEventListener('click', () => {
     if (isActive) {
         catalogOverlay.classList.remove('active');
     } else {
+        // Close search if it's open (especially on mobile)
+        closeSearchModal();
+
+        // Also collapse desktop search if empty
+        const desktopInput = document.getElementById('searchInput');
+        if (desktopInput && !desktopInput.value) {
+            collapseSearch();
+        }
+
         catalogOverlay.classList.add('active');
     }
     App.utils.triggerHaptic('light');
@@ -314,6 +518,61 @@ catalogOverlay.addEventListener('click', (e) => {
         }
     }
 });
+
+// Search Modal Logic
+const searchOverlay = document.getElementById('searchOverlay');
+const searchModalInput = document.getElementById('searchModalInput');
+const searchModalClear = document.getElementById('searchModalClear');
+
+if (searchOverlay) {
+    searchOverlay.addEventListener('click', (e) => {
+        if (e.target === searchOverlay) closeSearchModal();
+    });
+}
+
+if (searchModalInput) {
+    searchModalInput.addEventListener('input', handleSearchModalInput);
+}
+
+if (searchModalClear) {
+    searchModalClear.addEventListener('click', clearSearchModal);
+}
+
+// Handle clicks on products in mobile search results
+const mobileSearchBar = document.getElementById('mobileSearchBar');
+if (mobileSearchBar) {
+    mobileSearchBar.addEventListener('click', (e) => {
+        const card = e.target.closest('.card');
+        if (card && card.dataset.action === 'open-product') {
+            const id = parseInt(card.dataset.id);
+            closeSearchModal();
+            openModal(id);
+        }
+
+        // Handle add to cart in search results
+        const addBtn = e.target.closest('[data-action="add-to-cart"]');
+        if (addBtn) {
+            e.stopPropagation();
+            const id = parseInt(addBtn.dataset.id);
+            const product = App.products.find(p => p.id === id);
+            if (product) App.store.addToCart(product);
+            App.utils.triggerHaptic('medium');
+            App.utils.showToast(getT('toast_added'));
+        }
+
+        // Handle wishlist toggle in search results
+        const wishlistBtn = e.target.closest('[data-action="toggle-wishlist"]');
+        if (wishlistBtn) {
+            e.stopPropagation();
+            const id = parseInt(wishlistBtn.dataset.id);
+            App.store.toggleWishlist(id);
+            App.utils.triggerHaptic('light');
+            // Re-render search results to update heart icon
+            const query = searchModalInput ? searchModalInput.value : '';
+            renderSearchResults(query);
+        }
+    });
+}
 
 // Modal (Product)
 modalOverlay.addEventListener('click', (e) => {

@@ -167,6 +167,12 @@ App.ui.updateStaticTexts = function () {
     const modalTitleCatalog = document.querySelector('.catalog-modal .modal-title');
     if (modalTitleCatalog) modalTitleCatalog.textContent = getT('cat_modal_title');
 
+    const modalTitleSearch = document.querySelector('.search-modal .modal-title');
+    if (modalTitleSearch) modalTitleSearch.textContent = getT('search_modal_title');
+
+    const searchModalInput = document.getElementById('searchModalInput');
+    if (searchModalInput) searchModalInput.placeholder = getT('search_placeholder');
+
     // Hero Section
     const hero1 = document.querySelector('.hero-card.primary');
     if (hero1) {
