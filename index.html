@@ -12,35 +12,64 @@
 
 <body>
 
-    <!-- Unified Top Navigation Panel -->
+    <!-- Sticky Top Navigation (Refined Style) -->
     <header class="header">
-        <div class="header-top-row">
+        <div class="header-main-row">
+            <!-- Logo -->
             <div class="logo" data-view="products">
-                <div class="logo-icon">🛸</div>
+                <div class="logo-icon-vibrant">🛸</div>
                 <div class="logo-text">
                     <span class="logo-name">DROP STATION</span>
                     <span class="logo-tagline">Твой стиль • Гаджеты • Дропы</span>
                 </div>
             </div>
+
+            <!-- Catalog & Search -->
+            <div class="header-nav-group">
+                <button class="catalog-btn-standalone" id="catalogBtn">
+                    <svg class="catalog-icon" width="20" height="20" viewBox="0 0 24 24" fill="white"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <rect x="3" y="3" width="8" height="8" rx="2" />
+                        <rect x="13" y="3" width="8" height="8" rx="2" />
+                        <rect x="3" y="13" width="8" height="8" rx="2" />
+                        <rect x="13" y="13" width="8" height="8" rx="2" />
+                    </svg>
+                    <span>Каталог</span>
+                </button>
+
+                <div class="header-search-wrapper" id="headerSearch">
+                    <div class="search-container-glass">
+                        <span class="search-icon">🔍</span>
+                        <input type="text" class="search-input" placeholder="Найти товар..." id="searchInput">
+                        <button class="clear-search-btn" id="clearSearch" style="display: none;">✕</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Actions -->
             <div class="header-actions">
+                <div class="header-action-btn" data-view="profile">
+                    <span class="action-icon">👤</span>
+                </div>
                 <div class="header-action-btn" data-view="cart">
                     <span class="action-icon">🛒</span>
                     <span class="cart-badge-dot" id="headerCartBadge" style="display: none;"></span>
                 </div>
-                <div class="header-action-btn" data-view="profile">
-                    <span class="action-icon">👤</span>
-                </div>
             </div>
         </div>
 
-        <!-- Search is now integrated into the header -->
-        <div class="header-search" id="headerSearch">
-            <div class="search-container">
-                <span class="search-icon">🔍</span>
-                <input type="text" class="search-input" placeholder="Найти товар..." id="searchInput">
-            </div>
+        <!-- Row 2: Quick Categories -->
+        <div class="header-categories" id="headerCategories">
+            <a href="#" class="quick-cat category-item active" data-category="all">🔥 Все</a>
+            <a href="#" class="quick-cat category-item" data-category="china">🇨🇳 Китай</a>
+            <a href="#" class="quick-cat category-item" data-category="clothes">👕 Одежда</a>
+            <a href="#" class="quick-cat category-item" data-category="electronics">📱 Электро</a>
+            <a href="#" class="quick-cat category-item" data-category="accessories">💎 Аксессуары</a>
+            <a href="#" class="quick-cat category-item" data-category="favorites">❤️ Избранное</a>
         </div>
     </header>
+
+
 
     <!-- Main Content -->
     <main class="main-content">
@@ -72,34 +101,6 @@
                         class="hero-img">
                 </div>
             </div>
-            <!-- Categories -->
-            <div class="section-title">📂 Категории</div>
-            <div class="categories" id="categories">
-                <div class="category-item active" data-category="all">
-                    <div class="category-icon">🔥</div>
-                    <span class="category-label">Все</span>
-                </div>
-                <div class="category-item" data-category="favorites">
-                    <div class="category-icon">❤️</div>
-                    <span class="category-label">Избранное</span>
-                </div>
-                <div class="category-item" data-category="china">
-                    <div class="category-icon">🇨🇳</div>
-                    <span class="category-label">Китай</span>
-                </div>
-                <div class="category-item" data-category="clothes">
-                    <div class="category-icon">👕</div>
-                    <span class="category-label">Одежда</span>
-                </div>
-                <div class="category-item" data-category="electronics">
-                    <div class="category-icon">📱</div>
-                    <span class="category-label">Электро</span>
-                </div>
-                <div class="category-item" data-category="accessories">
-                    <div class="category-icon">💎</div>
-                    <span class="category-label">Аксесс...</span>
-                </div>
-            </div>
 
             <!-- Products -->
             <div class="section-title">✨ Товары</div>
@@ -107,7 +108,7 @@
         </div>
 
         <!-- Cart View -->
-        <div class="cart-view" id="cartView">
+        <div class="cart-view hidden" id="cartView">
             <div class="section-title">🛒 Корзина</div>
             <div id="cartItems"></div>
             <div class="cart-total" id="cartTotal" style="display: none;">
@@ -124,7 +125,7 @@
         </div>
 
         <!-- Profile View -->
-        <div class="profile-view" id="profileView" style="display: none;">
+        <div class="profile-view hidden" id="profileView">
             <div class="profile-header">
                 <div class="profile-avatar" id="profileAvatar">👤</div>
                 <div class="profile-info">
@@ -173,6 +174,43 @@
         </div>
     </nav>
 
+    <!-- Catalog Modal Overlay -->
+    <div class="modal-overlay" id="catalogOverlay">
+        <div class="modal catalog-modal">
+            <div class="modal-handle"></div>
+            <div class="modal-content">
+                <div class="modal-title" style="font-size: 24px; font-weight: 800; margin-bottom: 20px;">📦 Каталог
+                </div>
+                <div class="catalog-grid" id="categories">
+                    <div class="category-box active" data-category="all">
+                        <div class="category-icon-large">🔥</div>
+                        <span class="category-name">Все товары</span>
+                    </div>
+                    <div class="category-box" data-category="china">
+                        <div class="category-icon-large">🇨🇳</div>
+                        <span class="category-name">Китай</span>
+                    </div>
+                    <div class="category-box" data-category="clothes">
+                        <div class="category-icon-large">👕</div>
+                        <span class="category-name">Одежда</span>
+                    </div>
+                    <div class="category-box" data-category="electronics">
+                        <div class="category-icon-large">📱</div>
+                        <span class="category-name">Электроника</span>
+                    </div>
+                    <div class="category-box" data-category="accessories">
+                        <div class="category-icon-large">💎</div>
+                        <span class="category-name">Аксессуары</span>
+                    </div>
+                    <div class="category-box" data-category="favorites">
+                        <div class="category-icon-large">❤️</div>
+                        <span class="category-name">Избранное</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Product Modal -->
     <div class="modal-overlay" id="modalOverlay">
         <div class="modal">
@@ -195,6 +233,7 @@
 
     <!-- External Scripts -->
     <script src="js/init.js"></script>
+    <script src="js/lang.js"></script>
     <script src="js/data.js"></script>
     <script src="js/utils.js"></script>
     <script src="js/state.js"></script>

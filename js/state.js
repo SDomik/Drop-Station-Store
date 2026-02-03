@@ -2,9 +2,11 @@ class Store {
     constructor() {
         const savedCart = localStorage.getItem('cart');
         const savedWishlist = localStorage.getItem('wishlist');
+        const savedLang = localStorage.getItem('lang') || (App.tg?.initDataUnsafe?.user?.language_code === 'uk' ? 'ua' : (App.tg?.initDataUnsafe?.user?.language_code === 'en' ? 'en' : 'ua'));
         this.state = {
             cart: savedCart ? JSON.parse(savedCart) : [],
             wishlist: savedWishlist ? JSON.parse(savedWishlist) : [],
+            lang: savedLang,
             category: 'all',
             searchQuery: ''
         };
@@ -30,10 +32,10 @@ class Store {
 
         if (existingItem) {
             existingItem.quantity += 1;
-            App.utils.showToast(`✅ Количество обновлено: ${existingItem.quantity}`);
+            App.utils.showToast(`${getT('toast_count_updated')}: ${existingItem.quantity}`);
         } else {
             this.state.cart = [...this.state.cart, { ...product, quantity: 1 }];
-            App.utils.showToast('✅ Добавлено в корзину');
+            App.utils.showToast(getT('toast_added'));
         }
         App.utils.triggerHaptic('light');
         this._saveCart();
@@ -77,7 +79,7 @@ class Store {
         if (index === -1) {
             this.state.wishlist.push(productId);
             App.utils.triggerHaptic('light');
-            App.utils.showToast('❤️ Добавлено в избранное');
+            App.utils.showToast(getT('toast_wishlist_added'));
         } else {
             this.state.wishlist.splice(index, 1);
             App.utils.triggerHaptic('light');
@@ -107,6 +109,21 @@ class Store {
             this.notify();
         }
     }
+
+    setLanguage(lang) {
+        if (this.state.lang !== lang) {
+            this.state.lang = lang;
+            localStorage.setItem('lang', lang);
+            this.notify();
+        }
+    }
 }
+
+// Helper to get translation
+function getT(key) {
+    const lang = App.store?.state?.lang || 'ru';
+    return App.i18n[lang][key] || App.i18n['ru'][key] || key;
+}
+window.getT = getT;
 
 App.store = new Store();
