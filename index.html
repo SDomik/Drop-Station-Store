@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>China & Second Shop</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">🛸</div>
+                DROP STATION
+            </div>
+            <div class="header-subtitle">Твой стиль • Гаджеты • Дропы</div>
+        </div>
+    </header>
+
+    <!-- Search -->
+    <div class="search-wrapper">
+        <div class="search-container">
+            <span class="search-icon">🔍</span>
+            <input type="text" class="search-input" placeholder="Найти товар..." id="searchInput">
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Products View -->
+        <div class="products-view" id="productsView">
+            <!-- Categories -->
+            <div class="section-title">📂 Категории</div>
+            <div class="categories" id="categories">
+                <div class="chip active" data-category="all">🔥 Все</div>
+                <div class="chip" data-category="china">🇨🇳 Китай</div>
+                <div class="chip" data-category="clothes">👕 Одежда</div>
+                <div class="chip" data-category="electronics">📱 Электроника</div>
+                <div class="chip" data-category="accessories">💎 Аксессуары</div>
+            </div>
+
+            <!-- Products -->
+            <div class="section-title">✨ Товары</div>
+            <div class="product-grid" id="productGrid"></div>
+        </div>
+
+        <!-- Cart View -->
+        <div class="cart-view" id="cartView">
+            <div class="section-title">🛒 Корзина</div>
+            <div id="cartItems"></div>
+            <div class="cart-total" id="cartTotal" style="display: none;">
+                <div class="cart-total-row">
+                    <span class="cart-total-label">Товаров:</span>
+                    <span class="cart-total-value" id="cartCount">0</span>
+                </div>
+                <div class="cart-total-row">
+                    <span class="cart-total-label">Итого:</span>
+                    <span class="cart-total-value big" id="cartSum">0 ₴</span>
+                </div>
+                <button class="checkout-btn">🚀 Оформить заказ</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <div class="nav-item active" data-view="products">
+            <span class="nav-icon">🏠</span>
+            <span class="nav-label">Главная</span>
+        </div>
+        <div class="nav-item" data-view="cart">
+            <span class="nav-icon">🛒</span>
+            <span class="nav-label">Корзина</span>
+            <span class="cart-badge" id="cartBadge" style="display: none;">0</span>
+        </div>
+        <div class="nav-item">
+            <span class="nav-icon">👤</span>
+            <span class="nav-label">Профиль</span>
+        </div>
+    </nav>
+
+    <!-- Product Modal -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <div class="modal-handle"></div>
+            <img src="" alt="" class="modal-img" id="modalImg">
+            <div class="modal-content">
+                <h2 class="modal-title" id="modalTitle"></h2>
+                <span class="modal-category" id="modalCategory"></span>
+                <p class="modal-desc" id="modalDesc"></p>
+                <div class="modal-price-row">
+                    <span class="modal-price" id="modalPrice"></span>
+                    <button class="modal-btn" id="modalBtn">В корзину</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast">✅ Добавлено в корзину</div>
+
+    <!-- External Scripts -->
+    <script src="js/init.js"></script>
+    <script src="js/data.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/state.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/main.js"></script>
+</body>
+
+</html>
