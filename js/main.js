@@ -30,6 +30,7 @@ function filterProducts() {
 
 function handleProductClick(e) {
     const btn = e.target.closest('[data-action="add-to-cart"]');
+    const heart = e.target.closest('[data-action="toggle-wishlist"]');
     const card = e.target.closest('[data-action="open-product"]');
 
     if (btn) {
@@ -40,6 +41,13 @@ function handleProductClick(e) {
         return;
     }
 
+    if (heart) {
+        e.stopPropagation();
+        const id = parseInt(heart.dataset.id);
+        App.store.toggleWishlist(id);
+        return;
+    }
+
     if (card) {
         const id = parseInt(card.dataset.id);
         openModal(id);
@@ -47,10 +55,16 @@ function handleProductClick(e) {
 }
 
 function handleCartClick(e) {
-    const removeBtn = e.target.closest('[data-action="remove-from-cart"]');
-    if (removeBtn) {
-        const id = parseInt(removeBtn.dataset.id);
-        App.store.removeFromCart(id);
+    const btn = e.target.closest('[data-action]');
+    if (!btn) return;
+
+    const action = btn.dataset.action;
+    const id = parseInt(btn.dataset.id);
+
+    if (action === 'increase-quantity') {
+        App.store.changeQuantity(id, 1);
+    } else if (action === 'decrease-quantity') {
+        App.store.changeQuantity(id, -1);
     }
 }
 
@@ -124,12 +138,20 @@ function switchView(viewName) {
     });
 
     // Update Views
+    productsView.classList.add('hidden');
+    cartView.classList.remove('active');
+    const profileView = document.getElementById('profileView');
+    if (profileView) profileView.style.display = 'none';
+
     if (viewName === 'products') {
         productsView.classList.remove('hidden');
-        cartView.classList.remove('active');
     } else if (viewName === 'cart') {
-        productsView.classList.add('hidden');
         cartView.classList.add('active');
+    } else if (viewName === 'profile') {
+        if (profileView) {
+            profileView.style.display = 'block';
+            renderProfile();
+        }
     }
 
     if (App.tg?.HapticFeedback) App.tg.HapticFeedback.selectionChanged();
@@ -161,7 +183,11 @@ function checkout() {
 // 1. Subscribe UI to State
 App.store.subscribe((state) => {
     // Re-render Products
-    App.ui.renderProducts(filterProducts(), (id) => App.store.isInCart(id));
+    App.ui.renderProducts(
+        filterProducts(),
+        (id) => App.store.isInCart(id),
+        (id) => App.store.isInWishlist(id)
+    );
 
     // Re-render Cart
     App.ui.renderCart(state.cart);
@@ -197,21 +223,28 @@ document.querySelectorAll('.nav-item').forEach(nav => {
 });
 
 // Profile
-const profileBtn = document.querySelector('.nav-item:nth-child(3)');
-if (profileBtn) {
-    profileBtn.addEventListener('click', () => {
-        const user = App.utils.getUser();
-        if (user) {
-            alert(`👤 ${user.first_name} ${user.last_name || ''}\n@${user.username || 'нет username'}`);
-        } else {
-            App.utils.showToast('👤 Профиль доступен в Telegram');
-        }
-    });
+// Profile Render
+function renderProfile() {
+    const user = App.utils.getUser();
+    const nameEl = document.getElementById('profileName');
+    const userEl = document.getElementById('profileUsername');
+
+    if (user) {
+        nameEl.textContent = `${user.first_name} ${user.last_name || ''}`;
+        userEl.textContent = user.username ? `@${user.username}` : 'Нет юзернейма';
+    } else {
+        nameEl.textContent = 'Гость';
+        userEl.textContent = 'Telegram WebApp не активен';
+    }
 }
 
 // Checkout
 document.querySelector('.checkout-btn').addEventListener('click', checkout);
 
 // 3. Initial Render
-App.ui.renderProducts(filterProducts(), (id) => App.store.isInCart(id));
+App.ui.renderProducts(
+    filterProducts(),
+    (id) => App.store.isInCart(id),
+    (id) => App.store.isInWishlist(id)
+);
 App.ui.updateCartBadge(0);

@@ -33,6 +33,20 @@
 
     <!-- Main Content -->
     <main class="main-content">
+        <!-- Hero Section -->
+        <div class="hero-section">
+            <div class="hero-content">
+                <h1 class="hero-title">New Collection</h1>
+                <p class="hero-subtitle">Discover the styles of tomorrow.</p>
+                <button class="hero-btn">Shop Now</button>
+            </div>
+            <div class="hero-image-container">
+                <div class="hero-circle"></div>
+                <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=600&fit=crop" alt="Hero"
+                    class="hero-img">
+            </div>
+        </div>
+
         <!-- Products View -->
         <div class="products-view" id="productsView">
             <!-- Categories -->
@@ -66,6 +80,38 @@
                 <button class="checkout-btn">🚀 Оформить заказ</button>
             </div>
         </div>
+
+        <!-- Profile View -->
+        <div class="profile-view" id="profileView" style="display: none;">
+            <div class="profile-header">
+                <div class="profile-avatar" id="profileAvatar">👤</div>
+                <div class="profile-info">
+                    <div class="profile-name" id="profileName">Loading...</div>
+                    <div class="profile-username" id="profileUsername">@username</div>
+                </div>
+            </div>
+
+            <div class="section-title">⚙️ Настройки</div>
+            <div class="profile-menu">
+                <div class="profile-menu-item">
+                    <span class="menu-icon">🌍</span>
+                    <span class="menu-label">Язык</span>
+                    <span class="menu-value">Русский</span>
+                </div>
+                <div class="profile-menu-item">
+                    <span class="menu-icon">🌙</span>
+                    <span class="menu-label">Тема</span>
+                    <span class="menu-value">Тёмная</span>
+                </div>
+            </div>
+
+            <div class="section-title">📦 История заказов</div>
+            <div class="profile-menu">
+                <div class="profile-empty-orders">
+                    История заказов пуста
+                </div>
+            </div>
+        </div>
     </main>
 
     <!-- Bottom Navigation -->
@@ -79,7 +125,7 @@
             <span class="nav-label">Корзина</span>
             <span class="cart-badge" id="cartBadge" style="display: none;">0</span>
         </div>
-        <div class="nav-item">
+        <div class="nav-item" data-view="profile">
             <span class="nav-icon">👤</span>
             <span class="nav-label">Профиль</span>
         </div>
