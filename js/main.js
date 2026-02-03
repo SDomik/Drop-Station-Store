@@ -134,9 +134,10 @@ function addToCartFromModal() {
 function switchView(viewName) {
     const productsView = document.getElementById('productsView');
     const cartView = document.getElementById('cartView');
+    const headerSearch = document.getElementById('headerSearch');
 
-    // Update Nav
-    document.querySelectorAll('.nav-item').forEach(item => {
+    // Update Nav Icons (Both Top & Bottom)
+    document.querySelectorAll('.nav-item, .header-action-btn, .logo').forEach(item => {
         if (item.dataset.view === viewName) item.classList.add('active');
         else item.classList.remove('active');
     });
@@ -146,6 +147,11 @@ function switchView(viewName) {
     cartView.classList.remove('active');
     const profileView = document.getElementById('profileView');
     if (profileView) profileView.style.display = 'none';
+
+    // Show/Hide search based on view
+    if (headerSearch) {
+        headerSearch.style.display = viewName === 'products' ? 'block' : 'none';
+    }
 
     if (viewName === 'products') {
         productsView.classList.remove('hidden');
@@ -218,43 +224,18 @@ modalOverlay.addEventListener('click', (e) => {
 });
 document.getElementById('modalBtn').addEventListener('click', addToCartFromModal);
 
-// Navigation
-document.querySelectorAll('.nav-item').forEach(nav => {
-    nav.addEventListener('click', () => {
-        const view = nav.dataset.view;
-        if (view) switchView(view);
-    });
-});
-
-// Profile
-// Profile Render
-function renderProfile() {
-    const user = App.utils.getUser();
-    const nameEl = document.getElementById('profileName');
-    const userEl = document.getElementById('profileUsername');
-
-    if (user) {
-        nameEl.textContent = `${user.first_name} ${user.last_name || ''}`;
-        userEl.textContent = user.username ? `@${user.username}` : 'Нет юзернейма';
-    } else {
-        nameEl.textContent = 'Гость';
-        userEl.textContent = 'Telegram WebApp не активен';
-    }
-}
-
-// Checkout
-document.querySelector('.checkout-btn').addEventListener('click', checkout);
-
-// 3. Initial Render
-App.ui.renderProducts(
-    filterProducts(),
-    (id) => App.store.isInCart(id),
-    (id) => App.store.isInWishlist(id)
-);
-App.ui.updateCartBadge(0);
-
-// Hero Buttons (Delegation)
+// Global Events (Delegation)
 document.addEventListener('click', (e) => {
+    // 1. Navigation (any element with data-view)
+    const navItem = e.target.closest('[data-view]');
+    if (navItem) {
+        const view = navItem.dataset.view;
+        if (view) {
+            switchView(view);
+        }
+    }
+
+    // 2. Hero Buttons
     const heroBtn = e.target.closest('.hero-btn');
     if (heroBtn) {
         const action = heroBtn.dataset.action;
@@ -272,3 +253,27 @@ document.addEventListener('click', (e) => {
         }
     }
 });
+
+// Profile Render
+function renderProfile() {
+    const user = App.utils.getUser();
+    const nameEl = document.getElementById('profileName');
+    const userEl = document.getElementById('profileUsername');
+
+    if (user) {
+        nameEl.textContent = `${user.first_name} ${user.last_name || ''}`;
+        userEl.textContent = user.username ? `@${user.username}` : 'Нет юзернейма';
+    } else {
+        nameEl.textContent = 'Гость';
+        userEl.textContent = 'Telegram WebApp не активен';
+    }
+}
+
+// 3. Initial Render
+App.ui.renderProducts(
+    filterProducts(),
+    (id) => App.store.isInCart(id),
+    (id) => App.store.isInWishlist(id)
+);
+App.ui.updateCartBadge(0);
+

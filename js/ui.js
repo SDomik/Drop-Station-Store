@@ -77,13 +77,15 @@ App.ui.renderCart = function (cartItems) {
 
 App.ui.updateCartBadge = function (count) {
     const cartBadge = getEl('cartBadge');
-    if (!cartBadge) return;
+    const headerBadge = getEl('headerCartBadge');
 
-    if (count > 0) {
+    if (cartBadge) {
         cartBadge.textContent = count;
-        cartBadge.style.display = 'flex';
-    } else {
-        cartBadge.style.display = 'none';
+        cartBadge.style.display = count > 0 ? 'flex' : 'none';
+    }
+
+    if (headerBadge) {
+        headerBadge.style.display = count > 0 ? 'block' : 'none';
     }
 };
 
