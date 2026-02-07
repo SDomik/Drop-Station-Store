@@ -431,13 +431,36 @@ function checkout() {
 // --- Bootstrap ---
 
 // 1. Subscribe UI to State
-App.store.subscribe((state) => {
-    // Re-render Products
-    App.ui.renderProducts(
-        filterProducts(),
-        (id) => App.store.isInCart(id),
-        (id) => App.store.isInWishlist(id)
-    );
+App.store.subscribe((state, prevState) => {
+    // Check if category or searchQuery changed → full re-render
+    const categoryChanged = prevState && (prevState.category !== state.category);
+    const searchChanged = prevState && (prevState.searchQuery !== state.searchQuery);
+    
+    if (categoryChanged || searchChanged) {
+        // Full re-render only when filtering changes
+        App.ui.renderProducts(
+            filterProducts(),
+            (id) => App.store.isInCart(id),
+            (id) => App.store.isInWishlist(id)
+        );
+    } else {
+        // Only update affected cards when cart/wishlist changes
+        // Find products that need update
+        const cartChanged = prevState && JSON.stringify(prevState.cart) !== JSON.stringify(state.cart);
+        const wishlistChanged = prevState && JSON.stringify(prevState.wishlist) !== JSON.stringify(state.wishlist);
+        
+        if (cartChanged || wishlistChanged) {
+            // Get all unique product IDs from cart and wishlist
+            const affectedIds = new Set([
+                ...state.cart.map(item => item.id),
+                ...state.wishlist
+            ]);
+            
+            affectedIds.forEach(id => {
+                App.ui.updateProductCard(id);
+            });
+        }
+    }
 
     // Re-render Cart
     App.ui.renderCart(state.cart);

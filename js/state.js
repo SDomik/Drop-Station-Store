@@ -17,17 +17,18 @@ class Store {
         this.listeners.push(listener);
     }
 
-    notify() {
-        this.listeners.forEach(listener => listener(this.state));
+    notify(prevState) {
+        this.listeners.forEach(listener => listener(this.state, prevState));
     }
 
-    _saveCart() {
+    _saveCart(prevCartState) {
         localStorage.setItem('cart', JSON.stringify(this.state.cart));
-        this.notify();
+        this.notify(prevCartState);
     }
 
     // Cart Actions
     addToCart(product) {
+        const prevCartState = JSON.parse(JSON.stringify(this.state.cart));
         const existingItem = this.state.cart.find(item => item.id === product.id);
 
         if (existingItem) {
@@ -38,23 +39,25 @@ class Store {
             App.utils.showToast(getT('toast_added'));
         }
         App.utils.triggerHaptic('light');
-        this._saveCart();
+        this._saveCart(prevCartState);
     }
 
     removeFromCart(productId) {
+        const prevCartState = JSON.parse(JSON.stringify(this.state.cart));
         this.state.cart = this.state.cart.filter(item => item.id !== productId);
         App.utils.triggerHaptic('medium');
-        this._saveCart();
+        this._saveCart(prevCartState);
     }
 
     changeQuantity(productId, delta) {
+        const prevCartState = JSON.parse(JSON.stringify(this.state.cart));
         const item = this.state.cart.find(i => i.id === productId);
         if (item) {
             item.quantity += delta;
             if (item.quantity <= 0) {
                 this.removeFromCart(productId);
             } else {
-                this._saveCart();
+                this._saveCart(prevCartState);
             }
             App.utils.triggerHaptic('light');
         }
@@ -69,12 +72,14 @@ class Store {
     }
 
     clearCart() {
+        const prevCartState = JSON.parse(JSON.stringify(this.state.cart));
         this.state.cart = [];
-        this._saveCart();
+        this._saveCart(prevCartState);
     }
 
     // Wishlist Actions
     toggleWishlist(productId) {
+        const prevState = JSON.parse(JSON.stringify(this.state.wishlist));
         const index = this.state.wishlist.indexOf(productId);
         if (index === -1) {
             this.state.wishlist.push(productId);
@@ -85,7 +90,7 @@ class Store {
             App.utils.triggerHaptic('light');
         }
         localStorage.setItem('wishlist', JSON.stringify(this.state.wishlist));
-        this.notify();
+        this.notify(prevState);
     }
 
     isInWishlist(productId) {
@@ -95,9 +100,15 @@ class Store {
     // Filter Actions
     setCategory(category) {
         if (this.state.category !== category) {
+            const prevState = {
+                cart: JSON.parse(JSON.stringify(this.state.cart)),
+                wishlist: JSON.parse(JSON.stringify(this.state.wishlist)),
+                category: this.state.category,
+                searchQuery: this.state.searchQuery
+            };
             this.state.category = category;
-            this.state.searchQuery = ''; // Clear search when category changes
-            this.notify();
+            this.state.searchQuery = '';
+            this.notify(prevState);
             if (App.tg?.HapticFeedback) {
                 App.tg.HapticFeedback.selectionChanged();
             }
@@ -106,16 +117,20 @@ class Store {
 
     setSearchQuery(query) {
         if (this.state.searchQuery !== query) {
+            const prevCart = JSON.parse(JSON.stringify(this.state.cart));
+            const prevWishlist = JSON.parse(JSON.stringify(this.state.wishlist));
             this.state.searchQuery = query;
-            this.notify();
+            this.notify({ cart: prevCart, wishlist: prevWishlist, category: this.state.category, searchQuery: this.state.searchQuery });
         }
     }
 
     setLanguage(lang) {
         if (this.state.lang !== lang) {
+            const prevCart = JSON.parse(JSON.stringify(this.state.cart));
+            const prevWishlist = JSON.parse(JSON.stringify(this.state.wishlist));
             this.state.lang = lang;
             localStorage.setItem('lang', lang);
-            this.notify();
+            this.notify({ cart: prevCart, wishlist: prevWishlist, category: this.state.category, searchQuery: this.state.searchQuery });
         }
     }
 }
