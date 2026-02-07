@@ -1,0 +1,129 @@
+/* === CART VIEW === */
+.cart-view {
+    display: block;
+    padding: 0 var(--padding-x) var(--section-gap);
+}
+
+.cart-view .section-title:first-child {
+    margin-top: var(--padding-md);
+}
+
+.cart-view.hidden {
+    display: none;
+}
+
+.cart-empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--tg-theme-hint-color);
+}
+
+.cart-empty-icon {
+    font-size: 64px;
+    margin-bottom: 16px;
+    opacity: 0.5;
+}
+
+.cart-item {
+    background: var(--card-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius);
+    padding: 12px;
+    display: flex;
+    gap: 12px;
+    margin-bottom: 12px;
+    animation: slideIn 0.3s ease;
+}
+
+.cart-item-img {
+    width: 70px;
+    height: 70px;
+    border-radius: var(--radius-sm);
+    object-fit: cover;
+}
+
+.cart-item-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.cart-item-title {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.cart-item-price {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--tg-theme-button-color);
+}
+
+.cart-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 4px;
+    border-radius: 20px;
+}
+
+.cart-control-btn {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: none;
+    background: var(--glass);
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.cart-control-btn:hover {
+    background: var(--tg-theme-button-color);
+    transform: scale(1.1);
+}
+
+.cart-quantity {
+    font-size: 14px;
+    font-weight: 600;
+    min-width: 16px;
+    text-align: center;
+}
+
+.cart-total {
+    background: var(--card-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-top: 20px;
+}
+
+.cart-total-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.cart-total-label {
+    color: var(--tg-theme-hint-color);
+}
+
+.cart-total-value {
+    font-weight: 600;
+}
+
+.cart-total-value.big {
+    font-size: 24px;
+    background: var(--accent-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}

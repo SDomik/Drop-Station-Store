@@ -35,6 +35,8 @@ function filterProducts() {
 
 function handleProductClick(e) {
     const btn = e.target.closest('[data-action="add-to-cart"]');
+    const incBtn = e.target.closest('[data-action="increase-quantity"]');
+    const decBtn = e.target.closest('[data-action="decrease-quantity"]');
     const heart = e.target.closest('[data-action="toggle-wishlist"]');
     const card = e.target.closest('[data-action="open-product"]');
 
@@ -43,6 +45,20 @@ function handleProductClick(e) {
         const id = parseInt(btn.dataset.id);
         const product = App.products.find(p => p.id === id);
         if (product) App.store.addToCart(product);
+        return;
+    }
+
+    if (incBtn) {
+        e.stopPropagation();
+        const id = parseInt(incBtn.dataset.id);
+        App.store.changeQuantity(id, 1);
+        return;
+    }
+
+    if (decBtn) {
+        e.stopPropagation();
+        const id = parseInt(decBtn.dataset.id);
+        App.store.changeQuantity(id, -1);
         return;
     }
 
@@ -432,6 +448,20 @@ App.store.subscribe((state) => {
     // Update Category Chips
     App.ui.updateCategories(state.category);
 
+    // Clear search inputs if searchQuery is empty (e.g. when category changes)
+    if (state.searchQuery === '') {
+        const sInput = document.getElementById('searchInput');
+        const smInput = document.getElementById('searchModalInput');
+        if (sInput && sInput.value !== '') sInput.value = '';
+        if (smInput && smInput.value !== '') smInput.value = '';
+
+        const clearBtn = document.getElementById('clearSearch');
+        if (clearBtn) clearBtn.style.display = 'none';
+
+        const smClearBtn = document.getElementById('searchModalClear');
+        if (smClearBtn) smClearBtn.style.display = 'none';
+    }
+
     // Update Modal Button if open
     updateModalButton();
 
@@ -507,9 +537,6 @@ catalogOverlay.addEventListener('click', (e) => {
 
         App.store.setCategory(cat);
         catalogOverlay.classList.remove('active');
-
-        // Visual feedback
-        document.querySelectorAll('.category-box').forEach(b => b.classList.toggle('active', b === box));
 
         // Scroll to products
         const productsSection = document.getElementById('productsView');
@@ -617,10 +644,6 @@ document.addEventListener('click', (e) => {
         e.preventDefault();
         const category = quickCat.dataset.category;
         if (category) {
-            // Update active state
-            document.querySelectorAll('.quick-cat').forEach(c => c.classList.remove('active'));
-            quickCat.classList.add('active');
-
             // Switch to products view and set category
             switchView('products');
             App.store.setCategory(category);

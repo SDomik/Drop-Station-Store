@@ -96,6 +96,7 @@ class Store {
     setCategory(category) {
         if (this.state.category !== category) {
             this.state.category = category;
+            this.state.searchQuery = ''; // Clear search when category changes
             this.notify();
             if (App.tg?.HapticFeedback) {
                 App.tg.HapticFeedback.selectionChanged();

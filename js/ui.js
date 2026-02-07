@@ -6,28 +6,72 @@ App.ui.renderProducts = function (products, isInCartFn, isInWishlistFn) {
     if (!productGrid) return;
 
     productGrid.innerHTML = products.map(p => {
-        const inCart = isInCartFn(p.id);
+        const cartItem = App.store.state.cart.find(item => item.id === p.id);
+        const quantity = cartItem ? cartItem.quantity : 0;
         const inWishlist = isInWishlistFn ? isInWishlistFn(p.id) : false;
-        const btnClass = inCart ? 'card-btn added' : 'card-btn';
-        const btnText = inCart ? '✓' : '+';
-        const heartClass = inWishlist ? 'card-heart active' : 'card-heart';
+        const heartClass = inWishlist ? 'icon-btn-fav active' : 'icon-btn-fav';
         const heartText = inWishlist ? '❤️' : '🤍';
 
-        return `
-        <div class="card" data-action="open-product" data-id="${p.id}">
-            <button class="${heartClass}" data-action="toggle-wishlist" data-id="${p.id}">${heartText}</button>
-            <div class="card-img-wrapper">
-                <img src="${p.img}" class="card-img" alt="${p.name}" loading="lazy">
-                ${p.badge ? `<span class="card-badge ${p.badge}">${getT('badge_second')}</span>` : `<span class="card-badge">${getT('badge_new')}</span>`}
+        // Badge mapping
+        const badgeMap = {
+            'hot': { text: 'HOT SALE', color: '#ff4757' },
+            'new': { text: 'НОВИНКА', color: '#00d1b2' },
+            'sale': { text: 'SALE', color: '#f39c12' },
+            'limited': { text: 'LIMITED', color: '#54a0ff' },
+            'discount': { text: '-15%', color: '#ff3860' },
+            'exclusive': { text: 'EXCLUSIVE', color: '#9b59b6' }
+        };
+
+        const badgesHtml = Object.entries(p.badges || {}).map(([key, active]) => {
+            if (!active) return '';
+            const info = badgeMap[key];
+            if (!info) return '';
+            return `<span class="badge-${key}" style="background: ${info.color};">${info.text}</span>`;
+        }).join('');
+
+        const freeDeliveryHtml = p.freeDelivery ? `<span class="badge-free-delivery" style="background: #2ecc71; color: white;">Free Delivery</span>` : '';
+
+        const cartActionHtml = quantity > 0 ? `
+            <div class="quantity-controls">
+                <button class="qty-btn" data-action="decrease-quantity" data-id="${p.id}">−</button>
+                <span class="qty-value">${quantity}</span>
+                <button class="qty-btn" data-action="increase-quantity" data-id="${p.id}">+</button>
             </div>
-            <div class="card-content">
+        ` : `
+            <button class="buy-btn" data-action="add-to-cart" data-id="${p.id}">
+                🛒 В корзину
+            </button>
+        `;
+
+        return `
+        <div class="card-v4-pro-updated" data-action="open-product" data-id="${p.id}">
+            <div class="img-box">
+                <div class="badges-all">
+                    ${badgesHtml}
+                    ${freeDeliveryHtml}
+                </div>
+                <div class="badges-bottom-left">
+                    ${p.rating ? `<span class="a-badge-rating">${p.rating} ⭐</span>` : ''}
+                    ${p.isTrend ? `<span class="a-badge-trend">🔥 TREND</span>` : ''}
+                    ${p.isHit ? `<span class="a-badge-hit">⭐ HIT</span>` : ''}
+                </div>
+                <img src="${p.img}" alt="${getT(`p${p.id}_name`)}" loading="lazy">
+                <div class="top-actions-right">
+                    <button class="${heartClass}" data-action="toggle-wishlist" data-id="${p.id}" title="В избранное">${heartText}</button>
+                    <button class="icon-btn-qv" title="Быстрый просмотр">👁️</button>
+                </div>
+            </div>
+            <div class="info-panel">
                 <div class="card-title">${getT(`p${p.id}_name`)}</div>
                 <div class="card-desc">${getT(`p${p.id}_desc`)}</div>
-                <div class="card-footer">
-                    <span class="card-price">${p.price} ₴</span>
-                    <button class="${btnClass}" data-action="add-to-cart" data-id="${p.id}">
-                        ${btnText}
-                    </button>
+                <div class="price-row-action">
+                    <div class="price-container">
+                        ${p.oldPrice ? `<span class="old-price">${p.oldPrice} ₴</span>` : ''}
+                        <span class="price-action">${p.price} ₴</span>
+                    </div>
+                    <div class="cart-action-container">
+                        ${cartActionHtml}
+                    </div>
                 </div>
             </div>
         </div>
@@ -90,7 +134,17 @@ App.ui.updateCartBadge = function (count) {
 };
 
 App.ui.updateCategories = function (activeCategory) {
-    document.querySelectorAll('.category-item').forEach(item => {
+    // Update quick categories in header
+    document.querySelectorAll('.category-item, .quick-cat').forEach(item => {
+        if (item.dataset.category === activeCategory) {
+            item.classList.add('active');
+        } else {
+            item.classList.remove('active');
+        }
+    });
+
+    // Update category boxes in catalog modal
+    document.querySelectorAll('.category-box').forEach(item => {
         if (item.dataset.category === activeCategory) {
             item.classList.add('active');
         } else {

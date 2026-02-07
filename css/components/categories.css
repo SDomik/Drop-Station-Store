@@ -1,0 +1,164 @@
+/* === CATEGORIES === */
+.categories {
+    display: flex;
+    gap: var(--padding-x);
+    overflow-x: auto;
+    padding: var(--padding-sm) var(--padding-x);
+    margin-bottom: var(--padding-sm);
+    scrollbar-width: none;
+}
+
+.categories::-webkit-scrollbar {
+    display: none;
+}
+
+.category-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--padding-xs);
+    min-width: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    padding: 4px;
+}
+
+.category-icon {
+    width: 54px;
+    height: 54px;
+    border-radius: 16px;
+    background: var(--card-bg);
+    border: 1px solid var(--glass-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+.category-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--tg-theme-hint-color);
+    text-align: center;
+    white-space: nowrap;
+}
+
+.category-item:hover .category-icon {
+    transform: translateY(-4px);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.category-item.active .category-icon {
+    background: var(--accent-gradient);
+    border-color: transparent;
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+    transform: translateY(-2px);
+}
+
+.category-item.active .category-label {
+    color: var(--tg-theme-text-color);
+    font-weight: 600;
+}
+
+/* Catalog Grid in Modal */
+.catalog-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    padding: 8px 0 0;
+}
+
+.category-box {
+    background: var(--card-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 18px;
+    padding: 12px 16px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 12px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(15px);
+    min-height: 60px;
+}
+
+.category-box::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, transparent 100%);
+    opacity: 0.5;
+    transition: opacity 0.3s ease;
+}
+
+.category-box:hover::before {
+    opacity: 1;
+}
+
+.category-box:active {
+    transform: scale(0.98);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.category-box.active {
+    background: var(--accent-gradient);
+    border-color: transparent;
+    box-shadow: 0 8px 25px rgba(99, 102, 241, 0.35);
+}
+
+.category-icon-large {
+    font-size: 22px;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+    transition: transform 0.3s ease;
+    z-index: 1;
+    width: 28px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.category-box:hover .category-icon-large {
+    transform: scale(1.1) rotate(5deg);
+}
+
+.category-name {
+    font-size: 14px;
+    font-weight: 600;
+    text-align: left;
+    color: var(--tg-theme-text-color);
+    text-transform: none;
+    letter-spacing: -0.1px;
+    transition: color 0.3s ease;
+    z-index: 1;
+    line-height: 1.2;
+}
+
+.category-box.active .category-name {
+    color: white;
+    font-weight: 700;
+}
+
+.category-box:hover .category-name {
+    color: var(--tg-theme-text-color);
+}
+
+/* Animation for grid items */
+#catalogOverlay.active .category-box {
+    animation: fadeScale 0.4s cubic-bezier(0.4, 0, 0.2, 1) backwards;
+}
+
+#catalogOverlay.active .category-box:nth-child(1) { animation-delay: 0.05s; }
+#catalogOverlay.active .category-box:nth-child(2) { animation-delay: 0.1s; }
+#catalogOverlay.active .category-box:nth-child(3) { animation-delay: 0.15s; }
+#catalogOverlay.active .category-box:nth-child(4) { animation-delay: 0.2s; }
+#catalogOverlay.active .category-box:nth-child(5) { animation-delay: 0.25s; }
+#catalogOverlay.active .category-box:nth-child(6) { animation-delay: 0.3s; }

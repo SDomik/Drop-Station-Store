@@ -159,14 +159,17 @@
 
     <!-- Bottom Navigation -->
     <nav class="bottom-nav">
+        <div class="nav-indicator"></div>
         <div class="nav-item active" data-view="products">
             <span class="nav-icon">🏠</span>
             <span class="nav-label">Главная</span>
         </div>
         <div class="nav-item" data-view="cart">
-            <span class="nav-icon">🛒</span>
+            <div class="nav-icon">
+                🛒
+                <span class="cart-badge" id="cartBadge" style="display: none;">0</span>
+            </div>
             <span class="nav-label">Корзина</span>
-            <span class="cart-badge" id="cartBadge" style="display: none;">0</span>
         </div>
         <div class="nav-item" data-view="profile">
             <span class="nav-icon">👤</span>
@@ -179,8 +182,7 @@
         <div class="modal catalog-modal">
             <div class="modal-handle"></div>
             <div class="modal-content">
-                <div class="modal-title" style="font-size: 24px; font-weight: 800; margin-bottom: 20px;">📦 Каталог
-                </div>
+                <div class="modal-title">📦 Каталог</div>
                 <div class="catalog-grid" id="categories">
                     <div class="category-box active" data-category="all">
                         <div class="category-icon-large">🔥</div>
