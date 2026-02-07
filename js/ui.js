@@ -6,44 +6,37 @@ App.ui.updateProductCard = function (productId) {
     const card = document.querySelector(`.card-v4-pro-updated[data-id="${productId}"]`);
     if (!card) return;
 
-    // Add animation class
-    card.classList.add('card-updating');
-    setTimeout(() => card.classList.remove('card-updating'), 300);
-
-    const product = App.products.find(p => p.id === productId);
-    if (!product) return;
-
     const cartItem = App.store.state.cart.find(item => item.id === productId);
     const quantity = cartItem ? cartItem.quantity : 0;
     const inWishlist = App.store.isInWishlist(productId);
-    const heartClass = inWishlist ? 'icon-btn-fav active' : 'icon-btn-fav';
-    const heartText = inWishlist ? '❤️' : '🤍';
 
-    // Update heart button
+    // Update heart button (only class and text, not innerHTML)
     const heartBtn = card.querySelector('[data-action="toggle-wishlist"]');
     if (heartBtn) {
-        heartBtn.className = heartClass;
-        heartBtn.textContent = heartText;
+        heartBtn.className = inWishlist ? 'icon-btn-fav active' : 'icon-btn-fav';
+        heartBtn.textContent = inWishlist ? '❤️' : '🤍';
     }
 
     // Update cart controls
     const cartActionContainer = card.querySelector('.cart-action-container');
-    if (cartActionContainer) {
-        if (quantity > 0) {
-            cartActionContainer.innerHTML = `
-                <div class="quantity-controls">
-                    <button class="qty-btn" data-action="decrease-quantity" data-id="${productId}">−</button>
-                    <span class="qty-value">${quantity}</span>
-                    <button class="qty-btn" data-action="increase-quantity" data-id="${productId}">+</button>
-                </div>
-            `;
-        } else {
-            cartActionContainer.innerHTML = `
-                <button class="buy-btn" data-action="add-to-cart" data-id="${productId}">
-                    🛒 В корзину
-                </button>
-            `;
-        }
+    if (!cartActionContainer) return;
+
+    if (quantity > 0) {
+        // Show quantity controls
+        cartActionContainer.innerHTML = `
+            <div class="quantity-controls">
+                <button type="button" class="qty-btn" data-action="decrease-quantity" data-id="${productId}">−</button>
+                <span class="qty-value">${quantity}</span>
+                <button type="button" class="qty-btn" data-action="increase-quantity" data-id="${productId}">+</button>
+            </div>
+        `;
+    } else {
+        // Show "Add to cart" button
+        cartActionContainer.innerHTML = `
+            <button type="button" class="buy-btn" data-action="add-to-cart" data-id="${productId}">
+                🛒 В корзину
+            </button>
+        `;
     }
 };
 

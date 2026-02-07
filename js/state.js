@@ -21,14 +21,19 @@ class Store {
         this.listeners.forEach(listener => listener(this.state, prevState));
     }
 
-    _saveCart(prevCartState) {
+    _saveCart(prevState) {
         localStorage.setItem('cart', JSON.stringify(this.state.cart));
-        this.notify(prevCartState);
+        this.notify(prevState);
     }
 
     // Cart Actions
     addToCart(product) {
-        const prevCartState = JSON.parse(JSON.stringify(this.state.cart));
+        const prevState = {
+            cart: JSON.parse(JSON.stringify(this.state.cart)),
+            wishlist: JSON.parse(JSON.stringify(this.state.wishlist)),
+            category: this.state.category,
+            searchQuery: this.state.searchQuery
+        };
         const existingItem = this.state.cart.find(item => item.id === product.id);
 
         if (existingItem) {
@@ -39,25 +44,35 @@ class Store {
             App.utils.showToast(getT('toast_added'));
         }
         App.utils.triggerHaptic('light');
-        this._saveCart(prevCartState);
+        this._saveCart(prevState);
     }
 
-    removeFromCart(productId) {
-        const prevCartState = JSON.parse(JSON.stringify(this.state.cart));
+    removeFromCart(productId, prevCartState) {
+        const prevState = prevCartState || {
+            cart: JSON.parse(JSON.stringify(this.state.cart)),
+            wishlist: JSON.parse(JSON.stringify(this.state.wishlist)),
+            category: this.state.category,
+            searchQuery: this.state.searchQuery
+        };
         this.state.cart = this.state.cart.filter(item => item.id !== productId);
         App.utils.triggerHaptic('medium');
-        this._saveCart(prevCartState);
+        this._saveCart(prevState);
     }
 
     changeQuantity(productId, delta) {
-        const prevCartState = JSON.parse(JSON.stringify(this.state.cart));
+        const prevState = {
+            cart: JSON.parse(JSON.stringify(this.state.cart)),
+            wishlist: JSON.parse(JSON.stringify(this.state.wishlist)),
+            category: this.state.category,
+            searchQuery: this.state.searchQuery
+        };
         const item = this.state.cart.find(i => i.id === productId);
         if (item) {
             item.quantity += delta;
             if (item.quantity <= 0) {
-                this.removeFromCart(productId);
+                this.removeFromCart(productId, prevState);
             } else {
-                this._saveCart(prevCartState);
+                this._saveCart(prevState);
             }
             App.utils.triggerHaptic('light');
         }
@@ -72,14 +87,24 @@ class Store {
     }
 
     clearCart() {
-        const prevCartState = JSON.parse(JSON.stringify(this.state.cart));
+        const prevState = {
+            cart: JSON.parse(JSON.stringify(this.state.cart)),
+            wishlist: JSON.parse(JSON.stringify(this.state.wishlist)),
+            category: this.state.category,
+            searchQuery: this.state.searchQuery
+        };
         this.state.cart = [];
-        this._saveCart(prevCartState);
+        this._saveCart(prevState);
     }
 
     // Wishlist Actions
     toggleWishlist(productId) {
-        const prevState = JSON.parse(JSON.stringify(this.state.wishlist));
+        const prevState = {
+            cart: JSON.parse(JSON.stringify(this.state.cart)),
+            wishlist: JSON.parse(JSON.stringify(this.state.wishlist)),
+            category: this.state.category,
+            searchQuery: this.state.searchQuery
+        };
         const index = this.state.wishlist.indexOf(productId);
         if (index === -1) {
             this.state.wishlist.push(productId);

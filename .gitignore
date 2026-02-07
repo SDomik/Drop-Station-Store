@@ -1,6 +1,8 @@
 # Специфические папки и файлы проекта
 GitIgnore/
 INFO.md
+page_snapshot.md
+current_page.md
 
 # Системные файлы
 .DS_Store

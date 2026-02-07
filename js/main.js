@@ -34,6 +34,11 @@ function filterProducts() {
 // --- Event Handlers ---
 
 function handleProductClick(e) {
+    // Prevent default behavior for buttons
+    if (e.target.closest('button')) {
+        e.preventDefault();
+    }
+    
     const btn = e.target.closest('[data-action="add-to-cart"]');
     const incBtn = e.target.closest('[data-action="increase-quantity"]');
     const decBtn = e.target.closest('[data-action="decrease-quantity"]');
@@ -450,10 +455,16 @@ App.store.subscribe((state, prevState) => {
         const wishlistChanged = prevState && JSON.stringify(prevState.wishlist) !== JSON.stringify(state.wishlist);
         
         if (cartChanged || wishlistChanged) {
-            // Get all unique product IDs from cart and wishlist
+            // Get all unique product IDs from BOTH prev and current state
+            // This ensures removed items are also updated
+            const prevCartIds = prevState ? prevState.cart.map(item => item.id) : [];
+            const currCartIds = state.cart.map(item => item.id);
+            const wishlistIds = state.wishlist;
+            
             const affectedIds = new Set([
-                ...state.cart.map(item => item.id),
-                ...state.wishlist
+                ...prevCartIds,
+                ...currCartIds,
+                ...wishlistIds
             ]);
             
             affectedIds.forEach(id => {
