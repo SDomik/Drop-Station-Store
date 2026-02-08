@@ -38,7 +38,7 @@ function handleProductClick(e) {
     if (e.target.closest('button')) {
         e.preventDefault();
     }
-    
+
     const btn = e.target.closest('[data-action="add-to-cart"]');
     const incBtn = e.target.closest('[data-action="increase-quantity"]');
     const decBtn = e.target.closest('[data-action="decrease-quantity"]');
@@ -243,7 +243,7 @@ function renderSearchResults(query) {
         resultsContainer.innerHTML = `
             <div class="search-empty">
                 <div class="search-empty-icon">🔍</div>
-                <p>Начните вводить название товара</p>
+                <p>${getT('search_start_typing')}</p>
             </div>
         `;
         return;
@@ -260,7 +260,7 @@ function renderSearchResults(query) {
         resultsContainer.innerHTML = `
             <div class="search-empty">
                 <div class="search-empty-icon">😔</div>
-                <p>Ничего не найдено</p>
+                <p>${getT('search_nothing_found')}</p>
             </div>
         `;
         return;
@@ -356,6 +356,7 @@ function addToCartFromModal() {
 function switchView(viewName) {
     const productsView = document.getElementById('productsView');
     const cartView = document.getElementById('cartView');
+    const favoritesView = document.getElementById('favoritesView');
     const headerSearch = document.getElementById('headerSearch');
 
     // Update Nav Icons (Both Top & Bottom)
@@ -369,19 +370,17 @@ function switchView(viewName) {
 
     // Specific logic for catalog button and search
     const catalogBtn = document.getElementById('catalogBtn');
-    if (viewName === 'products') {
-        if (App.store.state.category !== 'all') {
-            catalogBtn?.classList.add('active');
-        }
-    } else {
+    if (viewName !== 'products') {
         catalogBtn?.classList.remove('active');
     }
+
 
     // Update Views
     productsView.classList.add('hidden');
     cartView.classList.add('hidden');
     const profileView = document.getElementById('profileView');
     if (profileView) profileView.classList.add('hidden');
+    if (favoritesView) favoritesView.classList.add('hidden');
 
     // Search bar is now ALWAYS visible
     if (headerSearch) {
@@ -390,14 +389,20 @@ function switchView(viewName) {
 
     if (viewName === 'products') {
         productsView.classList.remove('hidden');
-        closeSearchModal(); // Optional: close if needed when clicking Home, or keep open? 
-        // User said "if open... he should hide". So let's close both.
+        closeSearchModal();
         if (catalogOverlay) catalogOverlay.classList.remove('active');
     } else if (viewName === 'cart') {
         cartView.classList.remove('hidden');
         App.ui.renderCart(App.store.state.cart);
         closeSearchModal();
         if (catalogOverlay) catalogOverlay.classList.remove('active');
+    } else if (viewName === 'favorites') {
+        if (favoritesView) {
+            favoritesView.classList.remove('hidden');
+            renderFavorites();
+            closeSearchModal();
+            if (catalogOverlay) catalogOverlay.classList.remove('active');
+        }
     } else if (viewName === 'profile') {
         if (profileView) {
             profileView.classList.remove('hidden');
@@ -425,9 +430,8 @@ function checkout() {
     if (App.tg?.sendData) {
         App.tg.sendData(JSON.stringify(orderData));
     } else {
-        const lang = App.store.state.lang;
-        const totalStr = lang === 'en' ? 'Total' : (lang === 'ua' ? 'Разом' : 'Итого');
-        alert(`${getT('section_orders')}:\n` + cart.map(i => `${i.name} - ${i.price}₴`).join('\n') + `\n\n${totalStr}: ${total}₴`);
+        const totalStr = getT('cart_total');
+        alert(`${getT('section_orders')}:\n` + cart.map(i => `${i.name} - ${i.price}₴`).join('\n') + `\n\n${totalStr} ${total}₴`);
     }
 
     App.utils.triggerHaptic('success');
@@ -440,7 +444,7 @@ App.store.subscribe((state, prevState) => {
     // Check if category or searchQuery changed → full re-render
     const categoryChanged = prevState && (prevState.category !== state.category);
     const searchChanged = prevState && (prevState.searchQuery !== state.searchQuery);
-    
+
     if (categoryChanged || searchChanged) {
         // Full re-render only when filtering changes
         App.ui.renderProducts(
@@ -453,20 +457,22 @@ App.store.subscribe((state, prevState) => {
         // Find products that need update
         const cartChanged = prevState && JSON.stringify(prevState.cart) !== JSON.stringify(state.cart);
         const wishlistChanged = prevState && JSON.stringify(prevState.wishlist) !== JSON.stringify(state.wishlist);
-        
+
         if (cartChanged || wishlistChanged) {
             // Get all unique product IDs from BOTH prev and current state
             // This ensures removed items are also updated
             const prevCartIds = prevState ? prevState.cart.map(item => item.id) : [];
             const currCartIds = state.cart.map(item => item.id);
-            const wishlistIds = state.wishlist;
-            
+            const prevWishlistIds = prevState ? prevState.wishlist : [];
+            const currWishlistIds = state.wishlist;
+
             const affectedIds = new Set([
                 ...prevCartIds,
                 ...currCartIds,
-                ...wishlistIds
+                ...prevWishlistIds,
+                ...currWishlistIds
             ]);
-            
+
             affectedIds.forEach(id => {
                 App.ui.updateProductCard(id);
             });
@@ -475,6 +481,9 @@ App.store.subscribe((state, prevState) => {
 
     // Re-render Cart
     App.ui.renderCart(state.cart);
+
+    // Re-render Favorites
+    renderFavorites();
 
     // Update Badge
     App.ui.updateCartBadge(state.cart.length);
@@ -516,6 +525,9 @@ if (productGrid) productGrid.addEventListener('click', handleProductClick);
 const cartItems = document.getElementById('cartItems');
 if (cartItems) cartItems.addEventListener('click', handleCartClick);
 
+const favoritesGrid = document.getElementById('favoritesGrid');
+if (favoritesGrid) favoritesGrid.addEventListener('click', handleProductClick);
+
 const searchInput = document.getElementById('searchInput');
 if (searchInput) {
     searchInput.addEventListener('input', handleSearch);
@@ -536,49 +548,56 @@ if (clearSearchBtn) clearSearchBtn.addEventListener('click', clearSearch);
 
 // Catalog Modal Logic
 const catalogOverlay = document.getElementById('catalogOverlay');
+const catalogBtn = document.getElementById('catalogBtn');
 
-document.getElementById('catalogBtn').addEventListener('click', () => {
-    const isActive = catalogOverlay.classList.contains('active');
-    if (isActive) {
-        catalogOverlay.classList.remove('active');
-    } else {
-        // Close search if it's open (especially on mobile)
-        closeSearchModal();
+if (catalogBtn) {
+    catalogBtn.addEventListener('click', () => {
+        const isActive = catalogOverlay?.classList.contains('active');
+        if (isActive) {
+            catalogOverlay.classList.remove('active');
+        } else {
+            // Close search if it's open (especially on mobile)
+            closeSearchModal();
 
-        // Also collapse desktop search if empty
-        const desktopInput = document.getElementById('searchInput');
-        if (desktopInput && !desktopInput.value) {
-            collapseSearch();
+            // Also collapse desktop search if empty
+            const desktopInput = document.getElementById('searchInput');
+            if (desktopInput && !desktopInput.value) {
+                collapseSearch();
+            }
+
+            if (catalogOverlay) {
+                catalogOverlay.classList.add('active');
+            }
         }
+        App.utils.triggerHaptic('light');
+    });
+}
 
-        catalogOverlay.classList.add('active');
-    }
-    App.utils.triggerHaptic('light');
-});
+if (catalogOverlay) {
+    catalogOverlay.addEventListener('click', (e) => {
+        if (e.target === catalogOverlay) catalogOverlay.classList.remove('active');
+    });
 
-catalogOverlay.addEventListener('click', (e) => {
-    if (e.target === catalogOverlay) catalogOverlay.classList.remove('active');
-});
+    // Category Click in Catalog Modal (Delegation)
+    catalogOverlay.addEventListener('click', (e) => {
+        const box = e.target.closest('.category-box');
+        if (box) {
+            const cat = box.dataset.category;
+            if (cat) {
+                switchView('products'); // Ensure we are on the products view
+                App.store.setCategory(cat);
 
-// Category Click in Catalog Modal (Delegation)
-catalogOverlay.addEventListener('click', (e) => {
-    const box = e.target.closest('.category-box');
-    if (box) {
-        const cat = box.dataset.category;
+                // Scroll to top of products like quick categories
+                const productsSection = document.getElementById('productsView');
+                if (productsSection) {
+                    productsSection.scrollIntoView({ behavior: 'smooth' });
+                }
 
-        // Always switch to products view when a category is selected
-        switchView('products');
-
-        App.store.setCategory(cat);
-        catalogOverlay.classList.remove('active');
-
-        // Scroll to products
-        const productsSection = document.getElementById('productsView');
-        if (productsSection) {
-            productsSection.scrollIntoView({ behavior: 'smooth' });
+                catalogOverlay.classList.remove('active');
+            }
         }
-    }
-});
+    });
+}
 
 // Search Modal Logic
 const searchOverlay = document.getElementById('searchOverlay');
@@ -636,10 +655,16 @@ if (mobileSearchBar) {
 }
 
 // Modal (Product)
-modalOverlay.addEventListener('click', (e) => {
-    if (e.target === modalOverlay) closeModal();
-});
-document.getElementById('modalBtn').addEventListener('click', addToCartFromModal);
+if (modalOverlay) {
+    modalOverlay.addEventListener('click', (e) => {
+        if (e.target === modalOverlay) closeModal();
+    });
+}
+
+const modalBtn = document.getElementById('modalBtn');
+if (modalBtn) {
+    modalBtn.addEventListener('click', addToCartFromModal);
+}
 
 // Global Events (Delegation)
 document.addEventListener('click', (e) => {
@@ -692,20 +717,13 @@ document.addEventListener('click', (e) => {
     }
 
     // 4. Localization Toggle (Profile)
-    const langItem = e.target.closest('.profile-menu-item');
+    const langItem = e.target.closest('[data-setting="lang"]');
     if (langItem) {
-        const labelEl = langItem.querySelector('.menu-label');
-        if (labelEl) {
-            const labelText = labelEl.textContent;
-            // Check if it's the language selection item
-            if (labelText === getT('profile_lang') || labelText === 'Язык' || labelText === 'Мова' || labelText === 'Language') {
-                const langs = ['ru', 'ua', 'en'];
-                const currentIdx = langs.indexOf(App.store.state.lang);
-                const nextLang = langs[(currentIdx + 1) % langs.length];
-                App.store.setLanguage(nextLang);
-                App.utils.triggerHaptic('medium');
-            }
-        }
+        const langs = ['ru', 'ua', 'en'];
+        const currentIdx = langs.indexOf(App.store.state.lang);
+        const nextLang = langs[(currentIdx + 1) % langs.length];
+        App.store.setLanguage(nextLang);
+        App.utils.triggerHaptic('medium');
     }
 });
 
@@ -740,3 +758,100 @@ App.ui.renderProducts(
 App.ui.renderCart(App.store.state.cart); // Render cart initially
 App.ui.updateCartBadge(App.store.state.cart.length); // Correct badge count
 App.ui.updateStaticTexts(); // Apply translations on load
+
+// --- Favorites Render ---
+function renderFavorites() {
+    const grid = document.getElementById('favoritesGrid');
+    const emptyState = document.getElementById('favoritesEmpty');
+
+    if (!grid || !emptyState) return;
+
+    const wishlistIds = App.store.state.wishlist;
+    const favorites = App.products.filter(p => wishlistIds.includes(p.id));
+
+    if (favorites.length === 0) {
+        grid.innerHTML = '';
+        emptyState.innerHTML = `
+            <div class="empty-icon favorites-empty-icon">💔</div>
+            <div class="empty-title">${getT('wishlist_empty')}</div>
+            <div class="empty-desc">${getT('wishlist_empty_desc')}</div>
+        `;
+        emptyState.style.display = 'flex';
+        return;
+    }
+
+    emptyState.style.display = 'none';
+
+    // Render favorites using the same template as products
+    grid.innerHTML = favorites.map(p => {
+        const cartItem = App.store.state.cart.find(item => item.id === p.id);
+        const quantity = cartItem ? cartItem.quantity : 0;
+        const inWishlist = true; // Always true for favorites
+        const heartClass = 'icon-btn-fav active';
+        const heartText = '❤️';
+
+        // Badge mapping
+        const badgeMap = {
+            'hot': { text: getT('badge_hot_text'), color: '#ff4757' },
+            'new': { text: getT('badge_new_text'), color: '#00d1b2' },
+            'sale': { text: getT('badge_sale_text'), color: '#f39c12' },
+            'limited': { text: getT('badge_limited_text'), color: '#54a0ff' },
+            'discount': { text: getT('badge_discount_text'), color: '#ff3860' },
+            'exclusive': { text: getT('badge_exclusive_text'), color: '#9b59b6' }
+        };
+
+        const badgesHtml = Object.entries(p.badges || {}).map(([key, active]) => {
+            if (!active) return '';
+            const info = badgeMap[key];
+            if (!info) return '';
+            return `<span class="badge-${key}" style="background: ${info.color};">${info.text}</span>`;
+        }).join('');
+
+        const freeDeliveryHtml = p.freeDelivery ? `<span class="badge-free-delivery" style="background: #2ecc71; color: white;">${getT('badge_free_delivery')}</span>` : '';
+
+        const cartActionHtml = quantity > 0 ? `
+            <div class="quantity-controls">
+                <button class="qty-btn" data-action="decrease-quantity" data-id="${p.id}">−</button>
+                <span class="qty-value">${quantity}</span>
+                <button class="qty-btn" data-action="increase-quantity" data-id="${p.id}">+</button>
+            </div>
+        ` : `
+            <button class="buy-btn" data-action="add-to-cart" data-id="${p.id}">
+                ${getT('btn_add_to_cart')}
+            </button>
+        `;
+
+        return `
+        <div class="card-v4-pro-updated" data-action="open-product" data-id="${p.id}">
+            <div class="img-box">
+                <div class="badges-all">
+                    ${badgesHtml}
+                    ${freeDeliveryHtml}
+                </div>
+                <div class="badges-bottom-left">
+                    ${p.rating ? `<span class="a-badge-rating">${p.rating} ⭐</span>` : ''}
+                    ${p.isTrend ? `<span class="a-badge-trend">${getT('badge_trend')}</span>` : ''}
+                    ${p.isHit ? `<span class="a-badge-hit">${getT('badge_hit')}</span>` : ''}
+                </div>
+                <img src="${p.img}" alt="${getT(`p${p.id}_name`)}" loading="lazy">
+                <div class="top-actions-right">
+                    <button class="${heartClass}" data-action="toggle-wishlist" data-id="${p.id}" title="${getT('btn_remove_from_favorites_title')}">${heartText}</button>
+                    <button class="icon-btn-qv" title="${getT('btn_quick_view_title')}">👁️</button>
+                </div>
+            </div>
+            <div class="info-panel">
+                <div class="card-title">${getT(`p${p.id}_name`)}</div>
+                <div class="card-desc">${getT(`p${p.id}_desc`)}</div>
+                <div class="price-row-action">
+                    <div class="price-container">
+                        ${p.oldPrice ? `<span class="old-price">${p.oldPrice} ₴</span>` : ''}
+                        <span class="price-action">${p.price} ₴</span>
+                    </div>
+                    <div class="cart-action-container">
+                        ${cartActionHtml}
+                    </div>
+                </div>
+            </div>
+        </div>
+    `}).join('');
+}

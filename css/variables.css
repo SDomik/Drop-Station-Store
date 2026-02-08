@@ -12,8 +12,8 @@
     --glass: rgba(255, 255, 255, 0.05);
     --glass-border: rgba(255, 255, 255, 0.1);
     --success: #22c55e;
-    --gap: 12px;
-    --radius: 16px;
+    --gap: 8px;
+    --radius: 15px;
     --radius-sm: 10px;
 
     /* Standardized Spacing (Condensed System) */
@@ -23,12 +23,12 @@
     /* Inside cards, small gaps */
     --padding-md: 8px;
     /* Standard container gap */
-    --padding-x: 16px;
+    --padding-x: 8px;
     /* Global side padding */
 
     --section-gap: 16px;
     --element-gap: 8px;
 
     /* Global Layout Spacing */
-    --main-top-padding: 110px;
+    --main-top-padding: 112px;
 }

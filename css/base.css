@@ -6,6 +6,20 @@
     -webkit-tap-highlight-color: transparent;
 }
 
+*:focus,
+*:focus-visible,
+*:active {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+button:focus,
+button:focus-visible,
+button:active {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
 body {
     background-color: var(--tg-theme-bg-color);
     color: var(--tg-theme-text-color);

@@ -72,7 +72,7 @@
     top: 8px;
     left: 8px;
     height: calc(100% - 16px);
-    width: calc(33.33% - 10.66px); /* Default for 3 items */
+    width: calc(25% - 10px); /* 4 items */
     background: rgba(255, 255, 255, 0.06);
     border-radius: 16px;
     transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -80,17 +80,21 @@
     pointer-events: none;
 }
 
-/* Indicator positions based on active item */
+/* Indicator positions based on active item (4 items) */
 .bottom-nav:has(.nav-item[data-view="products"].active) .nav-indicator {
     transform: translateX(0);
 }
 
+.bottom-nav:has(.nav-item[data-view="favorites"].active) .nav-indicator {
+    transform: translateX(calc(100% + 6.66px));
+}
+
 .bottom-nav:has(.nav-item[data-view="cart"].active) .nav-indicator {
-    transform: translateX(calc(100% + 5.33px));
+    transform: translateX(calc(200% + 13.33px));
 }
 
 .bottom-nav:has(.nav-item[data-view="profile"].active) .nav-indicator {
-    transform: translateX(calc(200% + 10.66px));
+    transform: translateX(calc(300% + 20px));
 }
 
 /* Badge adjustment */

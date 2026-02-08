@@ -65,7 +65,6 @@
             <a href="#" class="quick-cat category-item" data-category="clothes">👕 Одежда</a>
             <a href="#" class="quick-cat category-item" data-category="electronics">📱 Электро</a>
             <a href="#" class="quick-cat category-item" data-category="accessories">💎 Аксессуары</a>
-            <a href="#" class="quick-cat category-item" data-category="favorites">❤️ Избранное</a>
         </div>
     </header>
 
@@ -74,7 +73,7 @@
     <!-- Main Content -->
     <main class="main-content">
         <!-- Products View -->
-        <div class="products-view" id="productsView">
+        <div class="products-view view-container" id="productsView">
             <!-- Hero Section (Dual) -->
             <div class="hero-grid">
                 <!-- Banner 1 -->
@@ -108,7 +107,7 @@
         </div>
 
         <!-- Cart View -->
-        <div class="cart-view hidden" id="cartView">
+        <div class="cart-view view-container hidden" id="cartView">
             <div class="section-title">🛒 Корзина</div>
             <div id="cartItems"></div>
             <div class="cart-total" id="cartTotal" style="display: none;">
@@ -125,7 +124,7 @@
         </div>
 
         <!-- Profile View -->
-        <div class="profile-view hidden" id="profileView">
+        <div class="profile-view view-container hidden" id="profileView">
             <div class="profile-header">
                 <div class="profile-avatar" id="profileAvatar">👤</div>
                 <div class="profile-info">
@@ -136,12 +135,12 @@
 
             <div class="section-title">⚙️ Настройки</div>
             <div class="profile-menu">
-                <div class="profile-menu-item">
+                <div class="profile-menu-item" data-setting="lang">
                     <span class="menu-icon">🌍</span>
                     <span class="menu-label">Язык</span>
                     <span class="menu-value">Русский</span>
                 </div>
-                <div class="profile-menu-item">
+                <div class="profile-menu-item" data-setting="theme">
                     <span class="menu-icon">🌙</span>
                     <span class="menu-label">Тема</span>
                     <span class="menu-value">Тёмная</span>
@@ -155,6 +154,17 @@
                 </div>
             </div>
         </div>
+
+        <!-- Favorites View -->
+        <div class="favorites-view view-container hidden" id="favoritesView">
+            <div class="section-title">❤️ Избранное</div>
+            <div class="favorites-grid" id="favoritesGrid"></div>
+            <div class="favorites-empty empty-state" id="favoritesEmpty" style="display: none;">
+                <div class="empty-icon">💔</div>
+                <div class="empty-title">Избранное пусто</div>
+                <div class="empty-desc">Добавьте товары в избранное</div>
+            </div>
+        </div>
     </main>
 
     <!-- Bottom Navigation -->
@@ -163,6 +173,10 @@
         <div class="nav-item active" data-view="products">
             <span class="nav-icon">🏠</span>
             <span class="nav-label">Главная</span>
+        </div>
+        <div class="nav-item" data-view="favorites">
+            <span class="nav-icon">❤️</span>
+            <span class="nav-label">Избранное</span>
         </div>
         <div class="nav-item" data-view="cart">
             <div class="nav-icon">
@@ -204,7 +218,7 @@
                         <div class="category-icon-large">💎</div>
                         <span class="category-name">Аксессуары</span>
                     </div>
-                    <div class="category-box" data-category="favorites">
+                    <div class="category-box" data-view="favorites">
                         <div class="category-icon-large">❤️</div>
                         <span class="category-name">Избранное</span>
                     </div>

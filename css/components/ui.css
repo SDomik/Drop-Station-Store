@@ -65,12 +65,12 @@
     background: var(--accent-gradient);
     border: none;
     color: white;
-    padding: 16px;
+    padding: var(--section-gap);
     border-radius: var(--radius);
     font-size: 16px;
     font-weight: 600;
     cursor: pointer;
-    margin-top: 12px;
+    margin-top: var(--gap);
     transition: all 0.3s ease;
 }
 
@@ -186,7 +186,7 @@
     color: var(--tg-theme-hint-color);
     text-transform: uppercase;
     letter-spacing: 1px;
-    padding: 0 var(--padding-x);
+    padding: 0;
     margin: var(--padding-md) 0 var(--padding-sm);
     display: flex;
     align-items: center;
@@ -194,8 +194,92 @@
 }
 
 /* Remove top margin from the very first element in any view to keep spacing consistent */
-.products-view > *:first-child,
-.cart-view > *:first-child,
-.profile-view > *:first-child {
-    margin-top: 0 !important;
+/* Unified Empty State Layout */
+.empty-state {
+    text-align: center;
+    padding: 60px var(--padding-x);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.4s ease-out;
+}
+
+.empty-icon {
+    font-size: 80px;
+    margin-bottom: 24px;
+    background: var(--accent-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 0 15px rgba(99, 102, 241, 0.3));
+    opacity: 0.9;
+    line-height: 1;
+}
+
+.empty-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--tg-theme-text-color);
+    margin-bottom: 8px;
+    line-height: 1.2;
+}
+
+.empty-desc {
+    font-size: 14px;
+    color: var(--tg-theme-hint-color);
+    max-width: 260px;
+    line-height: 1.5;
+    margin: 0 auto;
+}
+
+/* Unified View Container System */
+.view-container {
+    padding: 0 var(--padding-x) var(--section-gap) !important;
+    display: block;
+    width: 100%;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    max-width: 100% !important;
+    box-sizing: border-box;
+}
+
+
+.products-view.hidden,
+.cart-view.hidden,
+.favorites-view.hidden,
+.profile-view.hidden {
+    display: none !important;
+}
+
+/* Ensure consistent top spacing for section titles in ANY view */
+.main-content>.view-container>.section-title:first-child {
+    margin-top: var(--padding-md) !important;
+}
+
+/* Standard Section Titles Padding/Margin */
+.section-title {
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--tg-theme-hint-color);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 0;
+    margin: var(--padding-md) 0 var(--padding-sm);
+    display: flex;
+    align-items: center;
+    gap: var(--padding-sm);
+}
+
+/* Global rule for first section title in ANY view to align perfectly */
+.section-title {
+    margin-top: var(--padding-md) !important;
+}
+
+/* Hero Grid */
+.hero-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--padding-x);
+    margin-bottom: var(--padding-md);
 }

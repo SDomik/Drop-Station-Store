@@ -19,24 +19,28 @@ App.ui.updateProductCard = function (productId) {
 
     // Update cart controls
     const cartActionContainer = card.querySelector('.cart-action-container');
-    if (!cartActionContainer) return;
+    const hadQuantityControls = cartActionContainer?.querySelector('.qty-value');
+    const currentQty = hadQuantityControls ? parseInt(hadQuantityControls.textContent) : 0;
 
-    if (quantity > 0) {
-        // Show quantity controls
-        cartActionContainer.innerHTML = `
-            <div class="quantity-controls">
-                <button type="button" class="qty-btn" data-action="decrease-quantity" data-id="${productId}">−</button>
-                <span class="qty-value">${quantity}</span>
-                <button type="button" class="qty-btn" data-action="increase-quantity" data-id="${productId}">+</button>
-            </div>
-        `;
-    } else {
-        // Show "Add to cart" button
-        cartActionContainer.innerHTML = `
-            <button type="button" class="buy-btn" data-action="add-to-cart" data-id="${productId}">
-                🛒 В корзину
-            </button>
-        `;
+    // Only update cart controls if quantity changed
+    if (currentQty !== quantity) {
+        if (quantity > 0) {
+            // Show quantity controls
+            cartActionContainer.innerHTML = `
+                <div class="quantity-controls">
+                    <button type="button" class="qty-btn" data-action="decrease-quantity" data-id="${productId}">−</button>
+                    <span class="qty-value">${quantity}</span>
+                    <button type="button" class="qty-btn" data-action="increase-quantity" data-id="${productId}">+</button>
+                </div>
+            `;
+        } else {
+            // Show "Add to cart" button
+            cartActionContainer.innerHTML = `
+                <button type="button" class="buy-btn" data-action="add-to-cart" data-id="${productId}">
+                    ${getT('btn_add_to_cart')}
+                </button>
+            `;
+        }
     }
 };
 
@@ -53,12 +57,12 @@ App.ui.renderProducts = function (products, isInCartFn, isInWishlistFn) {
 
         // Badge mapping
         const badgeMap = {
-            'hot': { text: 'HOT SALE', color: '#ff4757' },
-            'new': { text: 'НОВИНКА', color: '#00d1b2' },
-            'sale': { text: 'SALE', color: '#f39c12' },
-            'limited': { text: 'LIMITED', color: '#54a0ff' },
-            'discount': { text: '-15%', color: '#ff3860' },
-            'exclusive': { text: 'EXCLUSIVE', color: '#9b59b6' }
+            'hot': { text: getT('badge_hot_text'), color: '#ff4757' },
+            'new': { text: getT('badge_new_text'), color: '#00d1b2' },
+            'sale': { text: getT('badge_sale_text'), color: '#f39c12' },
+            'limited': { text: getT('badge_limited_text'), color: '#54a0ff' },
+            'discount': { text: getT('badge_discount_text'), color: '#ff3860' },
+            'exclusive': { text: getT('badge_exclusive_text'), color: '#9b59b6' }
         };
 
         const badgesHtml = Object.entries(p.badges || {}).map(([key, active]) => {
@@ -68,7 +72,7 @@ App.ui.renderProducts = function (products, isInCartFn, isInWishlistFn) {
             return `<span class="badge-${key}" style="background: ${info.color};">${info.text}</span>`;
         }).join('');
 
-        const freeDeliveryHtml = p.freeDelivery ? `<span class="badge-free-delivery" style="background: #2ecc71; color: white;">Free Delivery</span>` : '';
+        const freeDeliveryHtml = p.freeDelivery ? `<span class="badge-free-delivery" style="background: #2ecc71; color: white;">${getT('badge_free_delivery')}</span>` : '';
 
         const cartActionHtml = quantity > 0 ? `
             <div class="quantity-controls">
@@ -78,7 +82,7 @@ App.ui.renderProducts = function (products, isInCartFn, isInWishlistFn) {
             </div>
         ` : `
             <button class="buy-btn" data-action="add-to-cart" data-id="${p.id}">
-                🛒 В корзину
+                ${getT('btn_add_to_cart')}
             </button>
         `;
 
@@ -91,13 +95,13 @@ App.ui.renderProducts = function (products, isInCartFn, isInWishlistFn) {
                 </div>
                 <div class="badges-bottom-left">
                     ${p.rating ? `<span class="a-badge-rating">${p.rating} ⭐</span>` : ''}
-                    ${p.isTrend ? `<span class="a-badge-trend">🔥 TREND</span>` : ''}
-                    ${p.isHit ? `<span class="a-badge-hit">⭐ HIT</span>` : ''}
+                    ${p.isTrend ? `<span class="a-badge-trend">${getT('badge_trend')}</span>` : ''}
+                    ${p.isHit ? `<span class="a-badge-hit">${getT('badge_hit')}</span>` : ''}
                 </div>
                 <img src="${p.img}" alt="${getT(`p${p.id}_name`)}" loading="lazy">
                 <div class="top-actions-right">
-                    <button class="${heartClass}" data-action="toggle-wishlist" data-id="${p.id}" title="В избранное">${heartText}</button>
-                    <button class="icon-btn-qv" title="Быстрый просмотр">👁️</button>
+                    <button class="${heartClass}" data-action="toggle-wishlist" data-id="${p.id}" title="${getT('btn_to_favorites_title')}">${heartText}</button>
+                    <button class="icon-btn-qv" title="${getT('btn_quick_view_title')}">👁️</button>
                 </div>
             </div>
             <div class="info-panel">
@@ -127,10 +131,10 @@ App.ui.renderCart = function (cartItems) {
 
     if (cartItems.length === 0) {
         cartItemsContainer.innerHTML = `
-            <div class="cart-empty">
-                <div class="cart-empty-icon">🛒</div>
-                <p>${getT('cart_empty')}</p>
-                <p style="font-size: 13px; margin-top: 8px;">${getT('cart_empty_desc')}</p>
+            <div class="cart-empty empty-state">
+                <div class="empty-icon cart-empty-icon">🛒</div>
+                <div class="empty-title">${getT('cart_empty')}</div>
+                <div class="empty-desc">${getT('cart_empty_desc')}</div>
             </div>
         `;
         cartTotalContainer.style.display = 'none';
@@ -173,16 +177,24 @@ App.ui.updateCartBadge = function (count) {
 };
 
 App.ui.updateCategories = function (activeCategory) {
-    // Update quick categories in header
-    document.querySelectorAll('.category-item, .quick-cat').forEach(item => {
-        if (item.dataset.category === activeCategory) {
-            item.classList.add('active');
-        } else {
+    // Only update quick categories if we are on the products view
+    const productsView = document.getElementById('productsView');
+    if (!productsView.classList.contains('hidden')) {
+        document.querySelectorAll('.category-item, .quick-cat').forEach(item => {
+            if (item.dataset.category === activeCategory) {
+                item.classList.add('active');
+            } else {
+                item.classList.remove('active');
+            }
+        });
+    } else {
+        // If not on products view, remove active class from all header categories
+        document.querySelectorAll('.category-item, .quick-cat').forEach(item => {
             item.classList.remove('active');
-        }
-    });
+        });
+    }
 
-    // Update category boxes in catalog modal
+    // Update category boxes in catalog modal (always works)
     document.querySelectorAll('.category-box').forEach(item => {
         if (item.dataset.category === activeCategory) {
             item.classList.add('active');
@@ -203,7 +215,7 @@ App.ui.updateStaticTexts = function () {
 
     // Search
     const searchInput = getEl('searchInput');
-    if (searchInput) searchInput.placeholder = getT('search_placeholder');
+    if (searchInput) searchInput.placeholder = getT('search_input_placeholder');
 
     // Categories
     document.querySelectorAll('.quick-cat').forEach(el => {
@@ -214,15 +226,50 @@ App.ui.updateStaticTexts = function () {
         const cat = el.dataset.category;
         if (cat) {
             const nameEl = el.querySelector('.category-name');
-            if (nameEl) nameEl.textContent = getT(`cat_${cat}`);
+            if (nameEl) {
+                // Check if specific name key exists for modals (clean names without emojis)
+                const cleanKey = `cat_${cat}_name`;
+                // If not (e.g. for dynamic or other cats), fallback to standard
+                // But for modal we want clean names
+                // Actually simplified logic: prioritize _name key if view is modal (class check?)
+                // Just use _name key if available
+                if (el.closest('.catalog-modal')) {
+                    if (cat === 'all') nameEl.textContent = getT('cat_all_items');
+                    else nameEl.textContent = getT(cleanKey) || getT(`cat_${cat}`);
+                } else {
+                    nameEl.textContent = getT(`cat_${cat}`);
+                }
+            }
         }
     });
+
+    // Explicit Modal Categories Update (Redundant but safe)
+    const catAllItems = document.querySelector('.category-box[data-category="all"] .category-name');
+    if (catAllItems) catAllItems.textContent = getT('cat_all_items');
+
+    const catChina = document.querySelector('.category-box[data-category="china"] .category-name');
+    if (catChina) catChina.textContent = getT('cat_china_name');
+
+    const catClothes = document.querySelector('.category-box[data-category="clothes"] .category-name');
+    if (catClothes) catClothes.textContent = getT('cat_clothes_name');
+
+    const catElectronics = document.querySelector('.category-box[data-category="electronics"] .category-name');
+    if (catElectronics) catElectronics.textContent = getT('cat_electronics_name');
+
+    const catAccessories = document.querySelector('.category-box[data-category="accessories"] .category-name');
+    if (catAccessories) catAccessories.textContent = getT('cat_accessories_name');
+
+    const catFavorites = document.querySelector('.category-box[data-view="favorites"] .category-name');
+    if (catFavorites) catFavorites.textContent = getT('cat_favorites_name');
+
 
     // Titles
     const productsTitle = document.querySelector('#productsView .section-title');
     if (productsTitle) productsTitle.textContent = getT('section_products');
     const cartTitle = document.querySelector('#cartView .section-title');
     if (cartTitle) cartTitle.textContent = getT('section_cart');
+    const favoritesTitle = document.querySelector('#favoritesView .section-title');
+    if (favoritesTitle) favoritesTitle.textContent = getT('section_favorites');
 
     // In Profile
     const settingsTitle = document.querySelectorAll('.profile-view .section-title')[0];
@@ -256,7 +303,7 @@ App.ui.updateStaticTexts = function () {
         if (view && labelEl) labelEl.textContent = getT(`nav_${view === 'products' ? 'home' : view}`);
     });
 
-    // Modal
+    // Modal Titles
     const modalTitleCatalog = document.querySelector('.catalog-modal .modal-title');
     if (modalTitleCatalog) modalTitleCatalog.textContent = getT('cat_modal_title');
 
@@ -264,7 +311,10 @@ App.ui.updateStaticTexts = function () {
     if (modalTitleSearch) modalTitleSearch.textContent = getT('search_modal_title');
 
     const searchModalInput = document.getElementById('searchModalInput');
-    if (searchModalInput) searchModalInput.placeholder = getT('search_placeholder');
+    if (searchModalInput) searchModalInput.placeholder = getT('search_input_placeholder');
+
+    const mobileSearchTitle = document.querySelector('.mobile-search-bar .modal-title');
+    if (mobileSearchTitle) mobileSearchTitle.textContent = getT('search_title');
 
     // Hero Section
     const hero1 = document.querySelector('.hero-card.primary');
@@ -279,4 +329,9 @@ App.ui.updateStaticTexts = function () {
         hero2.querySelector('.hero-subtitle').textContent = getT('hero_sale_sub');
         hero2.querySelector('.hero-btn').textContent = getT('hero_go_btn');
     }
+
+    // App Title & Logo
+    document.title = getT('app_title');
+    const logoName = document.querySelector('.logo-name');
+    if (logoName) logoName.textContent = getT('logo_name');
 };

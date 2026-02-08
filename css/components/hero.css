@@ -1,9 +1,11 @@
-/* === HERO (Dual) === */
 .hero-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: var(--padding-x);
-    margin: 0 var(--padding-x) var(--padding-md);
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100%;
+    margin-bottom: var(--padding-md) !important;
 }
 
 /* Warm Animation (Refined) */

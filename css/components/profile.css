@@ -1,18 +1,17 @@
 /* === PROFILE VIEW === */
-.profile-view {
-    padding: 0 var(--padding-x) var(--section-gap);
-    animation: fadeScale 0.3s ease;
+.profile-view.hidden {
+    display: none !important;
 }
 
 .profile-header {
     background: var(--card-bg);
     border: 1px solid var(--glass-border);
     border-radius: var(--radius);
-    padding: 24px;
+    padding: var(--section-gap);
     display: flex;
     align-items: center;
-    gap: 16px;
-    margin-bottom: 24px;
+    gap: var(--section-gap);
+    margin-bottom: var(--section-gap);
 }
 
 .profile-avatar {
@@ -30,7 +29,7 @@
 .profile-name {
     font-size: 18px;
     font-weight: 700;
-    margin-bottom: 4px;
+    margin-bottom: var(--padding-xs);
 }
 
 .profile-username {
@@ -43,13 +42,13 @@
     border: 1px solid var(--glass-border);
     border-radius: var(--radius);
     overflow: hidden;
-    margin-bottom: 24px;
+    margin-bottom: var(--section-gap);
 }
 
 .profile-menu-item {
     display: flex;
     align-items: center;
-    padding: 16px;
+    padding: var(--section-gap);
     border-bottom: 1px solid var(--glass-border);
     cursor: pointer;
     transition: background 0.2s;
@@ -65,7 +64,7 @@
 
 .menu-icon {
     font-size: 20px;
-    margin-right: 12px;
+    margin-right: var(--gap);
 }
 
 .menu-label {
